@@ -4,11 +4,13 @@ binary-ghc-args:
 module-template: ! 'module MODULE_NAME where
 
 '
-extensions: {}
+extensions:
+  RankNTypes: true
 environment: ghc-7.8-stable-14.09
 auto-hidden: []
 cabal-file: project.cabal
 version: 1
 extra-packages: ''
-ghc-args: []
+ghc-args:
+- -Wall
 excluded-modules: []
