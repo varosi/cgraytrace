@@ -30,7 +30,6 @@ data OrthoCamera = OrthoCamera {
 
 instance Camera OrthoCamera where
       cameraRay cam (SS imagePos) = Ray (start, orthoDir cam) where
-          (P vpos) = orthoPos cam
           (V2 x y) = (imagePos - (V2 0.5 0.5)) * (orthoSize cam)
           vpos3 = V3 x y 0.0
           start = orthoPos cam .+^ (vpos3 *! view)
