@@ -11,12 +11,14 @@ mapEnergy :: Energy -> PixelRGB8
 mapEnergy (Energy (r, g, b)) = PixelRGB8 (f2w r) (f2w g) (f2w b) where
         f2w f = truncate (f * 255.0)
 
+depthMap :: [Intersection] -> Float
+depthMap = (/ 1000) . foldl min maxBound . map depth
+
 -- Single sample
 sample :: Camera cam => cam -> Scene -> ScreenSpace -> Energy
 sample camera scene pos = Energy (a, 0, 0) where
-        a       = t / 1000
+        a       = depthMap . map (intersect ray) $ scene
         ray     = cameraRay camera pos
-        t       = foldl min maxBound $ map (depth.intersect ray) scene     :: Float
 
 -- Ray-trace whole image viewed by camera
 raytrace :: Camera cam => Scene -> cam -> Image PixelRGB8
