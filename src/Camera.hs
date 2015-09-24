@@ -2,15 +2,8 @@
 module Camera where
 
 import Math
-import Linear.V
-import Linear.V2
-import Linear.V3
-import Linear.V4
-import Linear.Epsilon
-import Linear.Vector
-import Linear.Matrix
+import Linear
 import Linear.Affine
-import Linear.Metric (normalize)
 
 newtype ScreenSpace = SS (V2 Float)
 
@@ -40,7 +33,7 @@ instance Camera OrthoCamera where
           (P vpos) = orthoPos cam
           (V2 x y) = (imagePos - (V2 0.5 0.5)) * (orthoSize cam)
           vpos3 = V3 x y 0.0
-          start = (orthoPos cam) .+^ (vpos3 *! view)
+          start = orthoPos cam .+^ (vpos3 *! view)
 
           xaxis = normalize( cross (normalized.orthoUp$cam) zaxis )
           yaxis = cross zaxis xaxis

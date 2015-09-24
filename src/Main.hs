@@ -8,8 +8,7 @@ module Main where
 import Yesod
 import Codec.Picture.Png
 import Raytracer
-import Linear.V3
-import Linear.V2
+import Linear
 import Linear.Affine
 import Math
 import Camera

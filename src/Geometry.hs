@@ -16,6 +16,6 @@ instance Intersectable Entity where
         ndir        = normalized dir
         (P voffs)   = origin - center
         ac          = dot ndir ndir                     :: Float
-        bc          = 2 * (dot voffs ndir)              :: Float
-        cc          = (dot voffs voffs) - (radius^2)    :: Float
+        bc          = 2 * dot voffs ndir                :: Float
+        cc          = dot voffs voffs - (radius^2)      :: Float
         d           = bc^2 - 4*ac*cc

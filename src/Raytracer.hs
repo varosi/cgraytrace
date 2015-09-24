@@ -4,8 +4,7 @@ import Math
 import Camera
 import Geometry
 import Codec.Picture.Types (Image(..), PixelRGB8(..), generateImage)
-import Linear.V2
-import Linear.V3
+import Linear
 import Data.Word8
 import Scene
 
@@ -20,7 +19,7 @@ sample :: Camera cam => cam -> Scene -> ScreenSpace -> Energy
 sample camera scene pos@(SS (V2 x y)) = Energy (a, 0, 0) where
         a       = if or isect then 1 else 0
         ray     = cameraRay camera pos
-        isect   = map (isIntersected.(intersect ray)) scene     :: [Bool]
+        isect   = map (isIntersected.intersect ray) scene     :: [Bool]
 
 -- Ray-trace whole image viewed by camera
 raytrace :: Camera cam => Scene -> cam -> Image PixelRGB8

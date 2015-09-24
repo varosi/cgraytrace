@@ -1,9 +1,7 @@
 module Math( Coord3(..), Normal, normalized, normalize3, Ray(..) ) where
 
-import Linear.V3
+import Linear
 import Linear.Affine
-import Linear.Metric (normalize)
-import Linear.Epsilon
 
 type Vec3   = V3 Float
 type Coord3 = Point V3 Float              -- World coordinate system
