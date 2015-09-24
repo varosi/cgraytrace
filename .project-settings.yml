@@ -7,6 +7,7 @@ module-template: ! 'module MODULE_NAME where
 extensions:
   DeriveGeneric: true
   RankNTypes: true
+  FlexibleContexts: true
 environment: ghc-7.8-stable-14.09
 auto-hidden: []
 cabal-file: project.cabal

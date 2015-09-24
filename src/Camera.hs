@@ -1,4 +1,3 @@
-{-# LANGUAGE FlexibleContexts #-}
 module Camera where
 
 import Math
