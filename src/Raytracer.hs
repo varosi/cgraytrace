@@ -9,14 +9,16 @@ newtype Energy = Energy (Float, Float, Float)    -- R, G, B components of energy
 
 mapEnergy :: Energy -> PixelRGB8
 mapEnergy (Energy (r, g, b)) = PixelRGB8 (f2w r) (f2w g) (f2w b) where
-        f2w f = truncate (f * 255.0)
+        f2w f = truncate (f * 255)
 
 depthMap :: [Intersection] -> Float
-depthMap = (/ 1000) . foldl min maxBound . map depth
+depthMap = foldl min maxBound . map energy where
+    energy Environment = 0.0
+    energy (Hit t)     = (t / 1000)
 
 -- Single sample
 sample :: Camera cam => cam -> Scene -> ScreenSpace -> Energy
-sample camera scene pos = Energy (a, 0, 0) where
+sample camera scene pos = Energy (a, a, a) where
         a       = depthMap . map (intersect ray) $ scene
         ray     = cameraRay camera pos
 
