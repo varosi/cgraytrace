@@ -29,7 +29,7 @@ getImageR = sendResponse $ toTypedContent (typePng, toContent (encodePng image))
                 camPos   = P $ V3 0.0 0.0 0.0
                 camDir   = normalize3( V3 0.0 0.0 1.0 )
                 camUp    = normalize3( V3 0.0 1.0 0.0 )
-                camFocal = 70.0
+                -- camFocal = 70.0
                 camSize  = V2 100.0 100.0
 
 main :: IO ()

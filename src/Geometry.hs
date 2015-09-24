@@ -12,9 +12,9 @@ class Intersectable geom where
 data Entity = Sphere Coord3 Float
 
 instance Intersectable Entity where
-    intersect (Ray (origin, dir)) (Sphere center radius) = Intersection (d >= 0) where
+    intersect (Ray (rayOrigin, dir)) (Sphere center radius) = Intersection (d >= 0) where
         ndir        = normalized dir
-        (P voffs)   = origin - center
+        (P voffs)   = rayOrigin - center
         ac          = dot ndir ndir                     :: Float
         bc          = 2 * dot voffs ndir                :: Float
         cc          = dot voffs voffs - (radius^2)      :: Float

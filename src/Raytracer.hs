@@ -1,11 +1,8 @@
-module Raytracer( raytrace, Entity, Scene, Sensor(..), Camera(..), Coord3(..) ) where
+module Raytracer( raytrace, Entity, Scene, Sensor(..), Camera(..) ) where
 
-import Math
 import Camera
 import Geometry
 import Codec.Picture.Types (Image(..), PixelRGB8(..), generateImage)
-import Linear
-import Data.Word8
 import Scene
 
 newtype Energy = Energy (Float, Float, Float)    -- R, G, B components of energy that we sense
@@ -16,7 +13,7 @@ mapEnergy (Energy (r, g, b)) = PixelRGB8 (f2w r) (f2w g) (f2w b) where
 
 -- Single sample
 sample :: Camera cam => cam -> Scene -> ScreenSpace -> Energy
-sample camera scene pos@(SS (V2 x y)) = Energy (a, 0, 0) where
+sample camera scene pos = Energy (a, 0, 0) where
         a       = if or isect then 1 else 0
         ray     = cameraRay camera pos
         isect   = map (isIntersected.intersect ray) scene     :: [Bool]
