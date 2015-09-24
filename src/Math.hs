@@ -6,11 +6,11 @@ import Linear.Metric (normalize)
 import Linear.Epsilon
 
 type Vec3   = V3 Float
-type Coord3 = Point V3 Float
+type Coord3 = Point V3 Float              -- World coordinate system
 
 newtype Ray = Ray (Coord3, Normal)        -- position & direction
 
--- Track normalized vectors type-safe
+-- Track normalized type-safe vectors in world-coordinate system
 newtype Normal = Normal Vec3
 
 normalize3 :: Vec3 -> Normal
