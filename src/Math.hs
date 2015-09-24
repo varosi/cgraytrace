@@ -1,4 +1,4 @@
-module Math( Coord3, Normal, normalized, normalize3, Ray(..) ) where
+module Math where
 
 import Linear
 import Linear.Affine
