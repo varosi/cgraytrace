@@ -11,10 +11,11 @@ data Scene = Scene {    scEntities  :: [Entity],
                         scLights    :: [Light] }
 
 demoScene :: Scene
-demoScene = Scene [sphere0, sphere1] [light0] where
+demoScene = Scene [sphere0, sphere1, plane0] [light0] where
         sphere0 = Sphere (P$V3 0 0 100) 20
-        sphere1 = Sphere (P$V3 5 15 100) 17
-        light0  = SpotLight (P$V3 0 (-50) 100, Brightness 1)
+        sphere1 = Sphere (P$V3 5 25 100) 5
+        plane0  = Plane (normalize3(V3 0 0.99 0.01)) (15)
+        light0  = OmniLight (P$V3 5 (-35) 100, Brightness 1)
 
 demoCamera :: OrthoCamera
 demoCamera   = OrthoCamera sensor camSize camPos camDir camUp where
@@ -23,4 +24,4 @@ demoCamera   = OrthoCamera sensor camSize camPos camDir camUp where
         camDir   = normalize3( V3 0 0 1 )
         camUp    = normalize3( V3 0 (-1) 0 )
         -- camFocal = 70.0
-        camSize  = V2 60 60
+        camSize  = V2 100 100
