@@ -15,6 +15,7 @@ class Camera cam where
 
 data PinholeCamera = PinholeCamera {
             phcamSensor      :: Sensor,
+            phcamSize        :: V2 Float,
             phcamPos         :: Coord3,
             phcamDir         :: Normal,
             phcamUp          :: Normal,
@@ -44,17 +45,25 @@ instance Camera OrthoCamera where
 
       cameraSensor = orthoSensor
 
---instance Camera PinholeCamera where
---    cameraRay cam imagePos = Ray (phcamPos cam, normalize3 v) where
---            d        = normalized( phcamDir cam )
---            v        = d ^* (phcamFocalLength cam)
---            (P vpos) = phcamPos cam
---            xaxis    = normalize( cross (phcamUp cam) zaxis )
---            yaxis    = cross zaxis xaxis
---            zaxis    = normalize( phcamPos cam .-^ (normalized.phcamDir $ cam) )
---            view     = m43_to_m44( V4 xaxis yaxis zaxis vpos )
---
---    cameraSensor = phcamSensor
+instance Camera PinholeCamera where
+    cameraRay cam (SS imagePos) = Ray (phcamPos cam, normalize3 proj) where
+        Sensor (w,h)  = phcamSensor cam
+        aspect        = fromIntegral w / fromIntegral h :: Float
+
+        (V2 x y)      = (imagePos - V2 0.5 0.5) * phcamSize cam
+        vpos3         = V3 (x*aspect) (-y) 0.0
+
+        d        = normalized( phcamDir cam )
+        v        = (d ^* (phcamFocalLength cam)) - vpos3
+        proj     = v *! view
+
+        xaxis    = normalize( cross( normalized.phcamUp$cam ) zaxis )
+        yaxis    = cross zaxis xaxis
+        zaxis    = normalized( phcamDir cam )
+
+        view     = V3 xaxis yaxis zaxis
+
+    cameraSensor = phcamSensor
 
 toScreenSpace :: Sensor -> Int -> Int -> ScreenSpace
 toScreenSpace (Sensor (width, height)) x y = SS $ V2 sx sy where
