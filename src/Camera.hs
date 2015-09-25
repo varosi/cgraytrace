@@ -6,7 +6,12 @@ import Linear.Affine
 
 newtype UnitSpace = US (V2 Float)
 
-newtype Sensor = Sensor (Int, Int)                      -- width, height
+newtype Sensor = Sensor (Int, Int, V2 Float)    -- width, height, physical size
+
+sensorAspect :: Sensor -> Float
+sensorAspect (Sensor (w,h,V2 sw sy)) =
+    fromIntegral w / fromIntegral h / sizeAspect where
+        sizeAspect = sw/sy
 
 -- Interface for all cameras
 class Camera cam where
@@ -15,7 +20,6 @@ class Camera cam where
 
 data PinholeCamera = PinholeCamera {
             phcamSensor      :: Sensor,
-            phcamSize        :: V2 Float,
             phcamPos         :: Coord3,
             phcamDir         :: Normal,
             phcamUp          :: Normal,
@@ -23,17 +27,16 @@ data PinholeCamera = PinholeCamera {
 
 data OrthoCamera = OrthoCamera {
             orthoSensor      :: Sensor,
-            orthoSize        :: V2 Float,
             orthoPos         :: Coord3,
             orthoDir         :: Normal,
             orthoUp          :: Normal }
 
 instance Camera OrthoCamera where
       cameraRay cam (US imagePos) = Ray (start, orthoDir cam) where
-          Sensor (w,h)  = orthoSensor cam
-          aspect        = fromIntegral w / fromIntegral h :: Float
+          Sensor (w,h,sensorSize)  = orthoSensor cam
+          aspect        = sensorAspect.orthoSensor $ cam
 
-          (V2 x y)      = (imagePos - V2 0.5 0.5) * orthoSize cam
+          (V2 x y)      = (imagePos - V2 0.5 0.5) * sensorSize
           vpos3         = V3 (x*aspect) y 0.0
           start         = orthoPos cam .+^ (vpos3 *! view)
 
@@ -47,11 +50,11 @@ instance Camera OrthoCamera where
 
 instance Camera PinholeCamera where
     cameraRay cam (US imagePos) = Ray (phcamPos cam, normalize3 proj) where
-        Sensor (w,h)  = phcamSensor cam
-        aspect        = fromIntegral w / fromIntegral h :: Float
+        Sensor (w,h,sensorSize) = phcamSensor cam
+        aspect   = sensorAspect.phcamSensor $ cam
 
-        (V2 x y)      = (imagePos - V2 0.5 0.5) * phcamSize cam
-        vpos3         = V3 (x*aspect) (-y) 0.0
+        (V2 x y) = (imagePos - V2 0.5 0.5) * sensorSize
+        vpos3    = V3 (x*aspect) (-y) 0.0
 
         d        = normalized( phcamDir cam )
         v        = d ^* phcamFocalLength cam - vpos3
@@ -66,6 +69,6 @@ instance Camera PinholeCamera where
     cameraSensor = phcamSensor
 
 toScreenSpace :: Sensor -> Int -> Int -> UnitSpace
-toScreenSpace (Sensor (width, height)) x y = US $ V2 sx sy where
+toScreenSpace (Sensor (width, height, _)) x y = US $ V2 sx sy where
         sx = fromIntegral x / (fromIntegral width  - 1)
         sy = fromIntegral y / (fromIntegral height - 1)

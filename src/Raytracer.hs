@@ -43,5 +43,5 @@ imageSample scene camera = pathTrace scene . cameraRay camera
 -- Ray-trace whole image viewed by camera
 raytrace :: Camera cam => Scene -> cam -> Image PixelRGB8
 raytrace scene camera = generateImage pixelColor width height where
-    pixelColor x y                  = mapEnergy . imageSample scene camera $ toScreenSpace sensor x y
-    sensor@(Sensor (width, height)) = cameraSensor camera
+    pixelColor x y                     = mapEnergy . imageSample scene camera $ toScreenSpace sensor x y
+    sensor@(Sensor (width, height, _)) = cameraSensor camera
