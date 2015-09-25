@@ -3,7 +3,8 @@ import Math
 import Linear
 import Linear.Affine
 
-data Intersection = Hit { isectDepth :: Float } | Environment
+data Intersection = Environment |
+                    Hit { isectDepth :: Float, isectEntity :: Entity }
 
 class Intersectable geom where
     intersect :: Ray -> geom -> Intersection
@@ -15,7 +16,7 @@ instance Bounded Float where
     maxBound = 1E+20
 
 instance Intersectable Entity where
-    intersect (Ray (rayOrigin, dir)) (Sphere center radius) = if d >= 0 then Hit t else Environment where
+    intersect (Ray (rayOrigin, dir)) entity@(Sphere center radius) = if d >= 0 then Hit t entity else Environment where
         ndir        = normalized dir
         (P voffs)   = rayOrigin - center
         ac          = dot ndir ndir                     :: Float

@@ -14,7 +14,7 @@ mapEnergy (Energy (r, g, b)) = PixelRGB8 (f2w r) (f2w g) (f2w b) where
 depthMap :: [Intersection] -> Float
 depthMap = foldl min maxBound . map energy where
     energy Environment = 0.0
-    energy (Hit t)     = t / 1000
+    energy (Hit t _)   = t / 1000
 
 imageSample :: Camera cam => cam -> Scene -> ScreenSpace -> Energy
 imageSample camera scene pos = Energy (a, a, a) where
