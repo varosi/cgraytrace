@@ -18,7 +18,7 @@ depthMap = foldl min maxBound . map energy where
 
 imageSample :: Camera cam => cam -> Scene -> ScreenSpace -> Energy
 imageSample camera scene pos = Energy (a, a, a) where
-        a       = depthMap . map (intersect ray) $ scene
+        a       = depthMap . map (intersect ray) . scEntities $ scene
         ray     = cameraRay camera pos
 
 -- Ray-trace whole image viewed by camera
