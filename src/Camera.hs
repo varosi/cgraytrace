@@ -4,13 +4,13 @@ import Math
 import Linear
 import Linear.Affine
 
-newtype ScreenSpace = SS (V2 Float)
+newtype UnitSpace = US (V2 Float)
 
 newtype Sensor = Sensor (Int, Int)                      -- width, height
 
 -- Interface for all cameras
 class Camera cam where
-    cameraRay    :: cam -> ScreenSpace -> Ray
+    cameraRay    :: cam -> UnitSpace -> Ray
     cameraSensor :: cam -> Sensor
 
 data PinholeCamera = PinholeCamera {
@@ -29,7 +29,7 @@ data OrthoCamera = OrthoCamera {
             orthoUp          :: Normal }
 
 instance Camera OrthoCamera where
-      cameraRay cam (SS imagePos) = Ray (start, orthoDir cam) where
+      cameraRay cam (US imagePos) = Ray (start, orthoDir cam) where
           Sensor (w,h)  = orthoSensor cam
           aspect        = fromIntegral w / fromIntegral h :: Float
 
@@ -46,7 +46,7 @@ instance Camera OrthoCamera where
       cameraSensor = orthoSensor
 
 instance Camera PinholeCamera where
-    cameraRay cam (SS imagePos) = Ray (phcamPos cam, normalize3 proj) where
+    cameraRay cam (US imagePos) = Ray (phcamPos cam, normalize3 proj) where
         Sensor (w,h)  = phcamSensor cam
         aspect        = fromIntegral w / fromIntegral h :: Float
 
@@ -54,7 +54,7 @@ instance Camera PinholeCamera where
         vpos3         = V3 (x*aspect) (-y) 0.0
 
         d        = normalized( phcamDir cam )
-        v        = (d ^* (phcamFocalLength cam)) - vpos3
+        v        = d ^* phcamFocalLength cam - vpos3
         proj     = v *! view
 
         xaxis    = normalize( cross( normalized.phcamUp$cam ) zaxis )
@@ -65,7 +65,7 @@ instance Camera PinholeCamera where
 
     cameraSensor = phcamSensor
 
-toScreenSpace :: Sensor -> Int -> Int -> ScreenSpace
-toScreenSpace (Sensor (width, height)) x y = SS $ V2 sx sy where
+toScreenSpace :: Sensor -> Int -> Int -> UnitSpace
+toScreenSpace (Sensor (width, height)) x y = US $ V2 sx sy where
         sx = fromIntegral x / (fromIntegral width  - 1)
         sy = fromIntegral y / (fromIntegral height - 1)

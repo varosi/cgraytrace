@@ -1,10 +1,11 @@
 module Light where
 
 import Math
-import Linear
 import Linear.Affine
 
+envEnergy :: Energy
 envEnergy = Energy (0, 0, 0)
+
 newtype Energy = Energy (Float, Float, Float)    -- R, G, B components of energy that we sense
 
 class Shadow light where

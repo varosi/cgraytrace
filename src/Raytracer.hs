@@ -25,19 +25,19 @@ rayCast :: Scene -> Ray -> Energy
 rayCast scene = depthMap . traceRay scene
 
 pathTrace :: Scene -> Ray -> Energy
-pathTrace scene cameraRay = result firstHit where
-    firstHit            = traceRay scene cameraRay
+pathTrace scene cameraRay' = result firstHit where
+    firstHit            = traceRay scene cameraRay'
 
     result Environment  = envEnergy
     result hit          = case traceShadow hit of
                             Environment -> eval light -- shadow ray is traced to the light - 100% diffuse reflection
-                            Hit _ _ _   -> envEnergy  -- light is shadowed by some object
+                            Hit {}      -> envEnergy  -- light is shadowed by some object
 
     light               = head . scLights $ scene
     shadow hit          = shadowRay light . isectPoint $ hit
     traceShadow         = traceRay scene . shadow
 
-imageSample :: Camera cam => Scene -> cam -> ScreenSpace -> Energy
+imageSample :: Camera cam => Scene -> cam -> UnitSpace -> Energy
 imageSample scene camera = pathTrace scene . cameraRay camera
 
 -- Ray-trace whole image viewed by camera

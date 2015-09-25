@@ -19,7 +19,7 @@ instance Bounded Float where
 
 instance Intersectable Entity where
     intersect (Ray (rayOrigin, dir)) entity@(Sphere center radius) = 
-        if d >= 0 then Hit t point entity else Environment where
+        if d >= 0 then Hit t point' entity else Environment where
             ndir        = normalized dir
             (P voffs)   = rayOrigin - center
             ac          = dot ndir ndir                     :: Float
@@ -29,10 +29,10 @@ instance Intersectable Entity where
             s0          = ((-bc) - d) / (2*ac)
             s1          = ((-bc) + d) / (2*ac)
             t           = min s0 s1
-            point       = rayOrigin .+^ (t *^ normalized dir)
+            point'      = rayOrigin .+^ (t *^ normalized dir)
 
     intersect (Ray (rayOrigin, dir)) entity@(Plane normal d) =
-        if t >= 0 then Hit t point entity else Environment where
-            (P p0) = rayOrigin
-            t     = -(dot p0 (normalized dir) + d) / (dot (normalized dir) (normalized normal))
-            point = rayOrigin .+^ (t *^ normalized dir)
+        if t >= 0 then Hit t point' entity else Environment where
+            (P p0)  = rayOrigin
+            t       = -(dot p0 (normalized dir) + d) / (dot (normalized dir) (normalized normal))
+            point'  = rayOrigin .+^ (t *^ normalized dir)
