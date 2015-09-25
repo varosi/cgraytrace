@@ -8,10 +8,6 @@ module Main where
 import Yesod
 import Codec.Picture.Png
 import Raytracer
-import Linear
-import Linear.Affine
-import Math
-import Camera
 import Scene
 
 -- Little server to show us rendering result

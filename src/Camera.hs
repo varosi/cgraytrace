@@ -30,9 +30,9 @@ data OrthoCamera = OrthoCamera {
 instance Camera OrthoCamera where
       cameraRay cam (SS imagePos) = Ray (start, orthoDir cam) where
           Sensor (w,h)  = orthoSensor cam
-          aspect        = (fromIntegral w) / (fromIntegral h) :: Float
+          aspect        = fromIntegral w / fromIntegral h :: Float
 
-          (V2 x y)      = (imagePos - (V2 0.5 0.5)) * (orthoSize cam)
+          (V2 x y)      = (imagePos - V2 0.5 0.5) * orthoSize cam
           vpos3         = V3 (x*aspect) y 0.0
           start         = orthoPos cam .+^ (vpos3 *! view)
 
