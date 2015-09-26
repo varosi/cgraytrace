@@ -4,7 +4,7 @@ import Math
 import Linear.Affine
 
 envEnergy :: Energy
-envEnergy = Energy (0, 0, 0)
+envEnergy = Energy (28.0/255, 115.0/255, 136.0/255)
 
 newtype Energy = Energy (Float, Float, Float)    -- R, G, B components of energy that we sense
 
