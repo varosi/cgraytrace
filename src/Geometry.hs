@@ -1,23 +1,33 @@
 module Geometry where
+import Material
 import Math
 import Linear
 import Linear.Affine
 
-data Intersection = Environment |
-                    Hit {   isectDepth  :: Float,
-                            isectPoint  :: Coord3,
-                            isectEntity :: Entity }
+data Entity = Entity { enGeom :: Geometry, enMaterial :: Material } deriving Eq
+
+data Intersection g =   Environment |
+                        Hit {   isectDepth  :: Float,
+                                isectPoint  :: Coord3,
+                                isectEntity :: g }
+
+liftIntersection :: Entity -> Intersection Geometry -> Intersection Entity
+liftIntersection _ Environment = Environment
+liftIntersection (Entity _ mat) (Hit d p g) = Hit d p (Entity g mat)
 
 class Intersectable geom where
-    intersect :: Ray -> geom -> Intersection
+    intersect :: Ray -> geom -> Intersection geom
 
-data Entity = Sphere Coord3 Float | Plane Normal Float
+data Geometry = Sphere Coord3 Float | Plane Normal Float deriving Eq
 
 instance Bounded Float where
     minBound = -1E+20
     maxBound = 1E+20
 
 instance Intersectable Entity where
+    intersect ray entity@(Entity geom mat) = liftIntersection entity . intersect ray $ geom
+
+instance Intersectable Geometry where
     intersect (Ray (rayOrigin, dir)) entity@(Sphere center radius) = 
         if d >= 0 then Hit t point' entity else Environment where
             ndir        = normalized dir

@@ -5,6 +5,7 @@ import Linear.Affine
 import Geometry
 import Camera
 import Light
+import Material
 import Math
 
 data Scene = Scene {    scEntities  :: [Entity],
@@ -12,9 +13,9 @@ data Scene = Scene {    scEntities  :: [Entity],
 
 demoScene :: Scene
 demoScene = Scene [sphere0, sphere1, plane0] [light0] where
-        sphere0 = Sphere (P$V3 0 0 200) 20
-        sphere1 = Sphere (P$V3 5 25 200) 5
-        plane0  = Plane (normalize3(V3 0 1 0)) (75)
+        sphere0 = Entity (Sphere (P$V3 0 0 200) 20) (DiffuseColor (V3 0.98 0 0))
+        sphere1 = Entity (Sphere (P$V3 5 25 200) 5) (DiffuseColor (V3 0 0.98 0))
+        plane0  = Entity (Plane (normalize3(V3 0 1 0)) (75)) (DiffuseColor (V3 0 0 0.5))
         light0  = OmniLight (P$V3 50 (-500) 200, Brightness 1)
 
 demoCamera = demoCamera1
