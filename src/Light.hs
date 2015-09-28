@@ -19,7 +19,7 @@ newtype Brightness = Brightness (V3 Float)
 data Light = OmniLight (Coord3, Brightness)
 
 instance Shadow Light where
-    shadowRay (OmniLight (pos, _)) point = Ray (point, dir) where
-        dir = normalize3( pos .-. point )
+    shadowRay (OmniLight (pos, _)) point' = Ray (point', dir) where
+        dir = normalize3( pos .-. point' )
 
     eval (OmniLight (_, Brightness e)) = Energy e

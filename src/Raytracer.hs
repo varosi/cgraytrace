@@ -13,9 +13,9 @@ mapEnergy :: Energy -> PixelRGB8
 mapEnergy (Energy (V3 r g b)) = PixelRGB8 (f2w r) (f2w g) (f2w b) where
         f2w f = truncate (f * 255)
 
-depthMap :: Intersection a -> Energy
-depthMap Environment = envEnergy
-depthMap (Hit t _ _) = Energy $ V3 a a a where a = t / 1000
+--depthMap :: Intersection a -> Energy
+--depthMap Environment = envEnergy
+--depthMap (Hit t _ _) = Energy $ V3 a a a where a = t / 1000
 
 traceRay :: Scene -> Ray -> Intersection Entity
 traceRay scene ray = foldl closest Environment . map (intersect ray) . scEntities $ scene where

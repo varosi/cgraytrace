@@ -11,24 +11,26 @@ data Intersection g =   Environment |
                                 isectPoint  :: Coord3,
                                 isectEntity :: g }
 
-liftIntersection :: Entity -> Intersection Geometry -> Intersection Entity
-liftIntersection _ Environment = Environment
-liftIntersection (Entity _ mat) (Hit d p g) = Hit d p (Entity g mat)
-
 class Intersectable geom where
     intersect :: Ray -> geom -> Intersection geom
 
-data Geometry = Sphere Coord3 Float | Plane Normal Float deriving Eq
+data Geometry = Sphere Coord3 Float |
+                Plane  Normal Float
+                    deriving Eq
 
 instance Bounded Float where
     minBound = -1E+20
     maxBound = 1E+20
 
+liftIntersection :: Entity -> Intersection Geometry -> Intersection Entity
+liftIntersection _ Environment = Environment
+liftIntersection (Entity _ mat) (Hit d p g) = Hit d p (Entity g mat)
+
 instance Intersectable Entity where
-    intersect ray entity@(Entity geom mat) = liftIntersection entity . intersect ray $ geom
+    intersect ray entity@(Entity geom _) = liftIntersection entity . intersect ray $ geom
 
 instance Intersectable Geometry where
-    intersect (Ray (rayOrigin, dir)) entity@(Sphere center radius) = 
+    intersect (Ray (rayOrigin, dir)) entity@(Sphere center radius) =
         if d >= 0 then Hit t point' entity else Environment where
             ndir        = normalized dir
             (P voffs)   = rayOrigin - center

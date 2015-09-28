@@ -33,7 +33,7 @@ data OrthoCamera = OrthoCamera {
 
 instance Camera OrthoCamera where
       cameraRay cam (US imagePos) = Ray (start, orthoDir cam) where
-          Sensor (w,h,sensorSize)  = orthoSensor cam
+          Sensor (_,_,sensorSize)  = orthoSensor cam
           aspect        = sensorAspect.orthoSensor $ cam
 
           (V2 x y)      = (imagePos - V2 0.5 0.5) * sensorSize
