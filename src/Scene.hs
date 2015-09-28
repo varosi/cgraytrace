@@ -8,8 +8,17 @@ import Light
 import Material
 import Math
 
+data Entity = Entity { enGeom :: Geometry, enMaterial :: Material } deriving Eq
+
 data Scene = Scene {    scEntities  :: [Entity],
                         scLights    :: [Light] }
+
+liftIntersection :: Entity -> Intersection Geometry -> Intersection Entity
+liftIntersection _ Environment = Environment
+liftIntersection (Entity _ mat) (Hit d p g) = Hit d p (Entity g mat)
+
+instance Intersectable Entity where
+    intersect ray entity@(Entity geom _) = liftIntersection entity . intersect ray $ geom
 
 demoScene :: Scene
 demoScene = Scene [sphere0, sphere1, plane0] [light0] where

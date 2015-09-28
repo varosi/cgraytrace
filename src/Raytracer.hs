@@ -23,8 +23,8 @@ traceRay scene ray = foldl closest Environment . map (intersect ray) . scEntitie
         closest Environment x   = x
         closest x0@(Hit t0 _ entity0) x@(Hit t _ entity)  = if (t < t0) && (entity0 /= entity) then x else x0
 
-rayCast :: Scene -> Ray -> Energy
-rayCast scene = depthMap . traceRay scene
+--rayCast :: Scene -> Ray -> Energy
+--rayCast scene = depthMap . traceRay scene
 
 pathTrace :: Scene -> Ray -> Energy
 pathTrace scene cameraRay' = bounce' firstHit where

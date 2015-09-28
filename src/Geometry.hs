@@ -4,8 +4,6 @@ import Math
 import Linear
 import Linear.Affine
 
-data Entity = Entity { enGeom :: Geometry, enMaterial :: Material } deriving Eq
-
 data Intersection g =   Environment |
                         Hit {   isectDepth  :: Float,
                                 isectPoint  :: Coord3,
@@ -21,13 +19,6 @@ data Geometry = Sphere Coord3 Float |
 instance Bounded Float where
     minBound = -1E+20
     maxBound = 1E+20
-
-liftIntersection :: Entity -> Intersection Geometry -> Intersection Entity
-liftIntersection _ Environment = Environment
-liftIntersection (Entity _ mat) (Hit d p g) = Hit d p (Entity g mat)
-
-instance Intersectable Entity where
-    intersect ray entity@(Entity geom _) = liftIntersection entity . intersect ray $ geom
 
 instance Intersectable Geometry where
     intersect (Ray (rayOrigin, dir)) entity@(Sphere center radius) =
