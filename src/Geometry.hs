@@ -1,13 +1,17 @@
 module Geometry where
-import Material
 import Math
 import Linear
 import Linear.Affine
 
+instance Bounded Float where
+    minBound = -1E+20
+    maxBound = 1E+20
+
 data Intersection g =   Environment |
-                        Hit {   isectDepth  :: Float,
-                                isectPoint  :: Coord3,
-                                isectEntity :: g }
+                        Hit {   isectDepth  :: Float,   -- depth to intersection from ray origin
+                                isectPoint  :: Coord3,  -- point of intersection
+                                isectNormal :: Normal,  -- normal at the point of intersection
+                                isectEntity :: g }      -- intersected geometry
 
 class Intersectable geom where
     intersect :: Ray -> geom -> Intersection geom
@@ -16,26 +20,23 @@ data Geometry = Sphere Coord3 Float |
                 Plane  Normal Float
                     deriving Eq
 
-instance Bounded Float where
-    minBound = -1E+20
-    maxBound = 1E+20
-
 instance Intersectable Geometry where
-    intersect (Ray (rayOrigin, dir)) entity@(Sphere center radius) =
-        if d >= 0 then Hit t point' entity else Environment where
+    intersect (Ray (rayOrigin, dir)) sphere@(Sphere center radius) =
+        if d >= 0 then Hit t ipoint inormal sphere else Environment where
             ndir        = normalized dir
             (P voffs)   = rayOrigin - center
             ac          = dot ndir ndir                     :: Float
             bc          = 2 * dot voffs ndir                :: Float
-            cc          = dot voffs voffs - (radius^2)      :: Float
-            d           = bc^2 - (4*ac*cc)
+            cc          = dot voffs voffs - (radius*radius) :: Float
+            d           = (bc*bc) - (4*ac*cc)
             s0          = ((-bc) - d) / (2*ac)
             s1          = ((-bc) + d) / (2*ac)
             t           = min s0 s1
-            point'      = rayOrigin .+^ (t *^ normalized dir)
+            ipoint      = rayOrigin .+^ (t *^ normalized dir)
+            inormal     = normalize3( ipoint .-. center )
 
-    intersect (Ray (rayOrigin, dir)) entity@(Plane normal d) =
-        if t >= 0 then Hit t point' entity else Environment where
+    intersect (Ray (rayOrigin, dir)) plane@(Plane normal d) =
+        if t >= 0 then Hit t point' normal plane else Environment where
             (P p0)  = rayOrigin
             t       = -(dot p0 (normalized dir) + d) / (dot (normalized dir) (normalized normal))
             point'  = rayOrigin .+^ (t *^ normalized dir)

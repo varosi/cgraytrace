@@ -1,5 +1,6 @@
 module Material where
 
 import Linear
+import BRDF
 
-data Material = DiffuseColor (V3 Float) deriving Eq
+data Material = Mat BRDFs deriving Eq

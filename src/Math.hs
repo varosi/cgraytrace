@@ -16,3 +16,5 @@ normalize3 = Normal . normalize
 
 normalized :: Normal -> Vec3
 normalized (Normal v) = v
+
+clamp min' max' x = max (min min' x) max'

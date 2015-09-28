@@ -8,6 +8,7 @@ import Math
 import Light
 import Linear
 import Material
+import BRDF
 
 mapEnergy :: Energy -> PixelRGB8
 mapEnergy (Energy (V3 r g b)) = PixelRGB8 (f2w r) (f2w g) (f2w b) where
@@ -21,7 +22,7 @@ traceRay :: Scene -> Ray -> Intersection Entity
 traceRay scene ray = foldl closest Environment . map (intersect ray) . scEntities $ scene where
         closest x0 Environment  = x0
         closest Environment x   = x
-        closest x0@(Hit t0 _ entity0) x@(Hit t _ entity)  = if (t < t0) && (entity0 /= entity) then x else x0
+        closest x0@(Hit t0 _ _ entity0) x@(Hit t _ _ entity)  = if (t < t0) && (entity0 /= entity) then x else x0
 
 --rayCast :: Scene -> Ray -> Energy
 --rayCast scene = depthMap . traceRay scene
@@ -31,12 +32,13 @@ pathTrace scene cameraRay' = bounce' firstHit where
     firstHit = traceRay scene cameraRay'
 
     bounce' Environment  = envEnergy
-    bounce' hit@(Hit _ _ entity') = Energy (secondHit * color ) where
-        (DiffuseColor color) = enMaterial entity'
-        secondHit = case traceShadow hit of
-                        Environment -> lightColor where
-                                        Energy lightColor = eval light  -- shadow ray is traced to the light - 100% diffuse reflection
-                        Hit {}      -> envColor  -- light is shadowed by some object
+    bounce' hit@(Hit _ _ normal entity') = reflectedLight where
+        Mat brdf = enMaterial entity'
+        lightHit = traceShadow hit
+        Ray (_, dir2light) = shadow hit
+        reflectedLight = case lightHit of
+                        Environment -> evalBRDF brdf hit dir2light . eval $ light -- shadow ray is traced to the light - 100% diffuse reflection
+                        Hit {}      -> Energy envColor                            -- light is shadowed by some object
         Energy envColor = envEnergy
 
     -- Single light support currently
