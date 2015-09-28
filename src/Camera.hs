@@ -50,7 +50,7 @@ instance Camera OrthoCamera where
 
 instance Camera PinholeCamera where
     cameraRay cam (US imagePos) = Ray (phcamPos cam, normalize3 proj) where
-        Sensor (w,h,sensorSize) = phcamSensor cam
+        Sensor (_,_,sensorSize) = phcamSensor cam
         aspect   = sensorAspect.phcamSensor $ cam
 
         (V2 x y) = (imagePos - V2 0.5 0.5) * sensorSize

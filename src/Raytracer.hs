@@ -28,11 +28,11 @@ traceRay scene ray = foldl closest Environment . map (intersect ray) . scEntitie
 --rayCast scene = depthMap . traceRay scene
 
 pathTrace :: Scene -> Ray -> Energy
-pathTrace scene cameraRay' = bounce' firstHit where
-    firstHit = traceRay scene cameraRay'
+pathTrace scene cameraRay' = bounce' geomHit where
+    geomHit = traceRay scene cameraRay'
 
     bounce' Environment  = envEnergy
-    bounce' hit@(Hit _ _ normal entity') = reflectedLight where
+    bounce' hit@(Hit _ _ _ entity') = reflectedLight where
         Mat brdf = enMaterial entity'
         lightHit = traceShadow hit
         Ray (_, dir2light) = shadow hit
