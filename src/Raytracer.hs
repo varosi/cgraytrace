@@ -10,16 +10,20 @@ import Linear
 import Material
 import BRDF
 
+-- rayCast (with depth) or pathTrace
+method :: Scene -> Ray -> Energy
+method = pathTrace
+
 mapEnergy :: Energy -> PixelRGB8
 mapEnergy (Energy (V3 r g b)) = PixelRGB8 (f2w r) (f2w g) (f2w b) where
         f2w f = truncate (f * 255)
 
---depthMap :: Intersection a -> Energy
---depthMap Environment = envEnergy
---depthMap (Hit t _ _) = Energy $ V3 a a a where a = t / 1000
+depthMap :: Intersection a -> Energy
+depthMap Environment = envEnergy
+depthMap (Hit t _ _ _) = Energy $ V3 a a a where a = t / 100
 
 traceRay :: Scene -> Maybe Entity -> Ray -> Intersection Entity
-traceRay scene toSkip ray@(Ray (origin, normal)) = foldl closest Environment . map (intersect ray) . (skip toSkip) . scEntities $ scene where
+traceRay scene toSkip ray = foldl closest Environment . map (intersect ray) . skip toSkip . scEntities $ scene where
         closest x0 Environment  = x0
         closest Environment x   = x
         closest x0@(Hit t0 _ _ entity0) x@(Hit t _ _ entity)  = if (t < t0) && (entity /= entity0) then x else x0
@@ -27,8 +31,8 @@ traceRay scene toSkip ray@(Ray (origin, normal)) = foldl closest Environment . m
         skip Nothing xs  = xs
         skip (Just e) xs = filter (/= e) xs
 
---rayCast :: Scene -> Ray -> Energy
---rayCast scene = depthMap . traceRay scene
+rayCast :: Scene -> Ray -> Energy
+rayCast scene = depthMap . traceRay scene Nothing
 
 pathTrace :: Scene -> Ray -> Energy
 pathTrace scene cameraRay' = bounce' geomHit where
@@ -46,7 +50,7 @@ pathTrace scene cameraRay' = bounce' geomHit where
             Hit {}      -> envEnergy                                  -- light is shadowed by some object
 
 imageSample :: Camera cam => Scene -> cam -> UnitSpace -> Energy
-imageSample scene camera = pathTrace scene . cameraRay camera
+imageSample scene camera = method scene . cameraRay camera
 
 -- Ray-trace whole image viewed by camera
 raytrace :: Camera cam => Scene -> cam -> Image PixelRGB8

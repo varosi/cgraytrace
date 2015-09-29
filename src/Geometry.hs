@@ -27,8 +27,8 @@ instance Intersectable Geometry where
             ndir        = normalized dir
             (P voffs)   = rayOrigin - center
             ac          = dot ndir ndir                     :: Float
-            bc          = 2 * (dot voffs ndir)              :: Float
-            cc          = (dot voffs voffs) - (radius*radius) :: Float
+            bc          = 2 * dot voffs ndir                :: Float
+            cc          = dot voffs voffs - (radius*radius) :: Float
             d           = (bc*bc) - (4*ac*cc)
             sqD         = sqrt d
             s0          = ((-bc) - sqD) / (2*ac)
@@ -40,5 +40,5 @@ instance Intersectable Geometry where
     intersect (Ray (rayOrigin, dir)) plane@(Plane normal d) =
         if t >= 0 then Hit t point' normal plane else Environment where
             (P p0)  = rayOrigin
-            t       = -(dot p0 (normalized dir) + d) / (dot (normalized dir) (normalized normal))
+            t       = -(dot p0 (normalized dir) + d) / dot (normalized dir) (normalized normal)
             point'  = rayOrigin .+^ (t *^ normalized dir)
