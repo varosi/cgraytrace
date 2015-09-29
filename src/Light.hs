@@ -11,15 +11,15 @@ envEnergy :: Energy
 -- envEnergy = Energy $ V3 (28.0/255) (115.0/255) (136.0/255)
 envEnergy = Energy $ V3 (0/255) (0/255) (0/255)
 
-newtype Energy = Energy Color deriving Num    -- R, G, B components of energy that we sense
+newtype Energy = Energy Color deriving (Num, Show)    -- R, G, B components of energy that we sense
 
 class Shadow light where
     shadowRay :: light -> Coord3 -> Ray
     eval      :: light -> Energy
 
-newtype Brightness = Brightness Color
+newtype Brightness = Brightness Color deriving Show
 
-data Light = OmniLight (Coord3, Brightness)
+data Light = OmniLight (Coord3, Brightness) deriving Show
 
 instance Shadow Light where
     shadowRay (OmniLight (pos, _)) point' = Ray (point', dir) where

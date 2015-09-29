@@ -9,7 +9,9 @@ import Material
 import BRDF
 import Math
 
-data Entity = Entity { enGeom :: Geometry, enMaterial :: Material } deriving Eq
+data Entity = Entity {  enGeom      :: Geometry,
+                        enMaterial  :: Material }
+                        deriving (Eq, Show)
 
 data Scene = Scene {    scEntities  :: [Entity],
                         scLights    :: [Light] }
@@ -23,10 +25,10 @@ instance Intersectable Entity where
 
 demoScene :: Scene
 demoScene = Scene [sphere0, sphere1] [light0] where
-        sphere0 = Entity (Sphere (P$V3 0 0 200) 20) (Mat$Diffuse (V3 0.98 0 0))
-        sphere1 = Entity (Sphere (P$V3 5 25 200) 5) (Mat$Diffuse (V3 0 0.98 0))
-        plane0  = Entity (Plane (normalize3(V3 0 1 0)) 75) (Mat$Diffuse (V3 0 0 0.5))
-        light0  = OmniLight (P$V3 (-50) (50) 0, Brightness 1)
+        sphere0 = Entity (Sphere (P$V3 0 0 200) 20) (Mat$Diffuse (V3 1 0 0))
+        sphere1 = Entity (Sphere (P$V3 5 35 200) 25) (Mat$Diffuse (V3 0 0.98 0))
+        plane0  = Entity (Plane (normalize3(V3 0 1 0)) (75)) (Mat$Diffuse (V3 0.5 0.5 0.5))
+        light0  = OmniLight (P$V3 (0) (0) 0, Brightness 1)
 
 demoCamera = demoCamera1
 
@@ -44,6 +46,6 @@ demoCamera0   = OrthoCamera sensor camPos camDir camUp where
 
 demoCamera1 :: PinholeCamera
 demoCamera1 = PinholeCamera sensor camPos camDir camUp camFocal  where
-        sensor   = Sensor (360, 240, camSize)
+        sensor   = Sensor (190, 120, camSize)
         camFocal = 5.0        -- 50mm
         camSize  = V2 3.6 2.4 -- 35mm

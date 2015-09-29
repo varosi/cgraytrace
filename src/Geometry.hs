@@ -12,13 +12,14 @@ data Intersection g =   Environment |
                                 isectPoint  :: Coord3,  -- point of intersection
                                 isectNormal :: Normal,  -- normal at the point of intersection
                                 isectEntity :: g }      -- intersected geometry
+                                deriving Show
 
 class Intersectable geom where
     intersect :: Ray -> geom -> Intersection geom
 
 data Geometry = Sphere Coord3 Float |
                 Plane  Normal Float
-                    deriving Eq
+                    deriving (Eq, Show)
 
 instance Intersectable Geometry where
     intersect (Ray (rayOrigin, dir)) sphere@(Sphere center radius) =
@@ -26,11 +27,12 @@ instance Intersectable Geometry where
             ndir        = normalized dir
             (P voffs)   = rayOrigin - center
             ac          = dot ndir ndir                     :: Float
-            bc          = 2 * dot voffs ndir                :: Float
-            cc          = dot voffs voffs - (radius*radius) :: Float
+            bc          = 2 * (dot voffs ndir)              :: Float
+            cc          = (dot voffs voffs) - (radius*radius) :: Float
             d           = (bc*bc) - (4*ac*cc)
-            s0          = ((-bc) - d) / (2*ac)
-            s1          = ((-bc) + d) / (2*ac)
+            sqD         = sqrt d
+            s0          = ((-bc) - sqD) / (2*ac)
+            s1          = ((-bc) + sqD) / (2*ac)
             t           = min s0 s1
             ipoint      = rayOrigin .+^ (t *^ normalized dir)
             inormal     = normalize3( ipoint .-. center )
