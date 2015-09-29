@@ -18,4 +18,4 @@ normalized :: Normal -> Vec3
 normalized (Normal v) = v
 
 clamp :: forall a. Ord a => a -> a -> a -> a
-clamp min' max' x = max (min min' x) max'
+clamp min' max' x = min (max min' x) max'

@@ -8,7 +8,8 @@ import Linear.Affine
 type Color = V3 Float
 
 envEnergy :: Energy
-envEnergy = Energy $ V3 (28.0/255) (115.0/255) (136.0/255)
+-- envEnergy = Energy $ V3 (28.0/255) (115.0/255) (136.0/255)
+envEnergy = Energy $ V3 (0/255) (0/255) (0/255)
 
 newtype Energy = Energy Color deriving Num    -- R, G, B components of energy that we sense
 

@@ -31,20 +31,16 @@ pathTrace :: Scene -> Ray -> Energy
 pathTrace scene cameraRay' = bounce' geomHit where
     geomHit = traceRay scene cameraRay'
 
-    bounce' Environment  = envEnergy
-    bounce' hit@(Hit _ _ _ entity') = reflectedLight where
-        Mat brdf = enMaterial entity'
-        lightHit = traceShadow hit
-        Ray (_, dir2light) = shadow hit
-        reflectedLight = case lightHit of
-                        Environment -> evalBRDF brdf hit dir2light . eval $ light -- shadow ray is traced to the light - 100% diffuse reflection
-                        Hit {}      -> Energy envColor                            -- light is shadowed by some object
-        Energy envColor = envEnergy
+    bounce' Environment             = envEnergy
+    bounce' hit@(Hit _ ipoint _ entity') = reflectedLight where
+        Mat brdf            = enMaterial entity'
+        light               = head . scLights $ scene                        -- Single light support currently
+        shadowRay'          = shadowRay light ipoint
+        Ray (_, dir2light)  = shadowRay'
 
-    -- Single light support currently
-    light        = head . scLights $ scene
-    shadow hit   = shadowRay light . isectPoint $ hit
-    traceShadow  = traceRay scene . shadow
+        reflectedLight = case traceRay scene shadowRay' of
+            Environment -> evalBRDF brdf hit dir2light . eval $ light -- shadow ray is traced to the light - 100% diffuse reflection
+            Hit {}      -> envEnergy                                  -- light is shadowed by some object
 
 imageSample :: Camera cam => Scene -> cam -> UnitSpace -> Energy
 imageSample scene camera = pathTrace scene . cameraRay camera
