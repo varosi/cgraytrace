@@ -40,5 +40,5 @@ instance Intersectable Geometry where
     intersect (Ray (rayOrigin, dir)) plane@(Plane normal d) =
         if t >= 0 then Hit t point' normal plane else Environment where
             (P p0)  = rayOrigin
-            t       = -(dot p0 (normalized dir) + d) / dot (normalized dir) (normalized normal)
+            t       = (-((dot p0 (normalized normal)) + d)) / dot (normalized dir) (normalized normal)
             point'  = rayOrigin .+^ (t *^ normalized dir)

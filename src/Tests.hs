@@ -20,14 +20,14 @@ prop_clamp2 = clamp (0 :: Float) 1 (-10) == 0
 prop_clamp3 = clamp (0 :: Float) 1 10    == 1
 
 testScene :: Scene
-testScene = Scene [sphere0, sphere1] [light0] where
-        sphere0 = Entity (Sphere (P$V3 0 0 200) 50) (Mat$Diffuse (V3 1 0 0))
-        sphere1 = Entity (Sphere (P$V3 5 35 200) 55) (Mat$Diffuse (V3 0 0.98 0))
-        plane0  = Entity (Plane (normalize3(V3 0 1 0)) (-75)) (Mat$Diffuse (V3 0.5 0.5 0.5))
+testScene = Scene [sphere0, sphere1, plane0] [light0] where
+        sphere0 = Entity (Sphere (P$V3 0 0 200) 20) (Mat$Diffuse (V3 0.98 0 0))
+        sphere1 = Entity (Sphere (P$V3 5 35 200) 25) (Mat$Diffuse (V3 0 0.98 0))
+        plane0  = Entity (Plane (normalize3(V3 0 1 (-0.5))) (100)) (Mat$Diffuse (V3 0.5 0.5 0.5))
         light0  = OmniLight (P$V3 (0) (0) 0, Brightness 1)
 
 testIt :: String
-testIt = show reflectedLight where
+testIt = show reflectedLight ++ "\n" ++ show shadowRay' where
         cameraRay = Ray (P$V3 0 0 0, normalize3 (V3 0 0 1))
         hit@(Hit _ ipoint _ entity') = traceRay testScene Nothing cameraRay
         test  = pathTrace testScene cameraRay
@@ -42,6 +42,6 @@ main :: IO ()
 main = do
         putStrLn testIt
 
-        putStrLn "QuickCheck ------"
+        putStrLn "QuickCheck ------\n"
         quickCheck prop_clamp0
         mapM_ quickCheck [prop_clamp1, prop_clamp2, prop_clamp3]
