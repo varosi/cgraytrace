@@ -24,9 +24,9 @@ depthMap (Hit t _ _ _) = Energy $ V3 a a a where a = t / 100
 
 traceRay :: Scene -> Maybe Entity -> Ray -> Intersection Entity
 traceRay scene toSkip ray = foldl closest Environment . map (intersect ray) . skip toSkip . scEntities $ scene where
-        closest x0 Environment  = x0
-        closest Environment x   = x
-        closest x0@(Hit t0 _ _ entity0) x@(Hit t _ _ entity)  = if (t < t0) && (entity /= entity0) then x else x0
+        closest x0 Environment                                = x0
+        closest Environment x@(Hit t _ _ _)                   = if t >= 0 then x else Environment
+        closest x0@(Hit t0 _ _ entity0) x@(Hit t _ _ entity)  = if (entity /= entity0) && (t >= 0) && (t < t0) then x else x0
 
         skip Nothing xs  = xs
         skip (Just e) xs = filter (/= e) xs
