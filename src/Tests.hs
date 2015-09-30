@@ -23,14 +23,14 @@ testScene :: Scene
 testScene = Scene [sphere0, sphere1, plane0] [light0] where
         sphere0 = Entity (Sphere (P$V3 0 0 200) 20) (Mat$Diffuse (V3 0.98 0 0))
         sphere1 = Entity (Sphere (P$V3 5 35 200) 25) (Mat$Diffuse (V3 0 0.98 0))
-        plane0  = Entity (Plane (normalize3(V3 0 1 (-0.5))) (100)) (Mat$Diffuse (V3 0.5 0.5 0.5))
+        plane0  = Entity (Plane (normalize3(V3 0 1 (-0.5))) 100) (Mat$Diffuse (V3 0.5 0.5 0.5))
         light0  = OmniLight (P$V3 (0) (0) 0, Brightness 1)
 
 testIt :: String
 testIt = show reflectedLight ++ "\n" ++ show shadowRay' where
-        cameraRay = Ray (P$V3 0 0 0, normalize3 (V3 0 0 1))
-        hit@(Hit _ ipoint _ entity') = traceRay testScene Nothing cameraRay
-        test  = pathTrace testScene cameraRay
+        cameraRay''' = Ray (P$V3 0 0 0, normalize3 (V3 0 0 1))
+        hit@(Hit _ ipoint _ entity') = traceRay testScene Nothing cameraRay'''
+        test  = pathTrace testScene cameraRay'''
         test1 = evalBRDF brdf hit dir2light . eval $ light
         reflectedLight = traceRay testScene (Just entity') shadowRay'
         shadowRay'          = shadowRay light ipoint

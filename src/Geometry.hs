@@ -3,10 +3,6 @@ import Math
 import Linear
 import Linear.Affine
 
-instance Bounded Float where
-    minBound = -1E+20
-    maxBound = 1E+20
-
 data Intersection g =   Environment |
                         Hit {   isectDepth  :: Float,   -- depth to intersection from ray origin
                                 isectPoint  :: Coord3,  -- point of intersection
@@ -40,5 +36,5 @@ instance Intersectable Geometry where
     intersect (Ray (rayOrigin, dir)) plane@(Plane normal d) =
         if t >= 0 then Hit t point' normal plane else Environment where
             (P p0)  = rayOrigin
-            t       = (-((dot p0 (normalized normal)) + d)) / dot (normalized dir) (normalized normal)
+            t       = (-(dot p0 (normalized normal) + d)) / dot (normalized dir) (normalized normal)
             point'  = rayOrigin .+^ (t *^ normalized dir)
