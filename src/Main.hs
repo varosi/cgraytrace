@@ -18,7 +18,7 @@ mkYesod "App" [parseRoutes| / ImageR GET |]
 
 getImageR :: MonadHandler m => m TypedContent
 getImageR = sendResponse $ toTypedContent (typePng, toContent (encodePng image)) where
-                image    = raytrace demoScene demoCamera
+                image    = raytrace cornellScene cornellCamera
 
 main :: IO ()
 main = warpEnv App

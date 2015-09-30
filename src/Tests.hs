@@ -27,16 +27,18 @@ testScene = Scene [sphere0, sphere1, plane0] [light0] where
         light0  = OmniLight (P$V3 (0) (0) 0, Brightness 1)
 
 testIt :: String
-testIt = show reflectedLight ++ "\n" ++ show shadowRay' where
-        cameraRay''' = Ray (P$V3 0 0 0, normalize3 (V3 0 0 1))
-        hit@(Hit _ ipoint _ entity') = traceRay testScene Nothing cameraRay'''
-        test  = pathTrace testScene cameraRay'''
+testIt = show lightDist ++ "\n" ++ show hit ++ "\n" ++ show reflectedLight ++ "\n" ++ show shadowRay' where
+        testingScene = cornellScene
+        cameraRay''' = Ray (P$V3 (1) 0 (-80), normalize3 (V3 0 0 1))
+        hit@(Hit _ ipoint _ entity') = traceRay testingScene Nothing cameraRay'''
+        test  = pathTrace testingScene cameraRay'''
         test1 = evalBRDF brdf hit dir2light . eval $ light
-        reflectedLight = traceRay testScene (Just entity') shadowRay'
+        reflectedLight = traceRay testingScene (Just entity') shadowRay'
         shadowRay'          = shadowRay light ipoint
         Ray (_, dir2light)  = shadowRay'
         Mat brdf  = enMaterial entity'
-        light     = head . scLights $ testScene
+        light     = head . scLights $ testingScene
+        lightDist = distance ipoint (lightPos light)
 
 main :: IO ()
 main = do

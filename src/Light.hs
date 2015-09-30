@@ -16,6 +16,7 @@ newtype Energy = Energy Color deriving (Num, Show)    -- R, G, B components of e
 class Shadow light where
     shadowRay :: light -> Coord3 -> Ray
     eval      :: light -> Energy
+    lightPos  :: light -> Coord3
 
 newtype Brightness = Brightness Color deriving Show
 
@@ -26,3 +27,5 @@ instance Shadow Light where
         dir = normalize3( pos .-. point' )
 
     eval (OmniLight (_, Brightness e)) = Energy e
+
+    lightPos (OmniLight (pos, _)) = pos

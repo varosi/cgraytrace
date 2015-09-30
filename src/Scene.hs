@@ -23,6 +23,21 @@ liftIntersection (Entity _ mat) (Hit d p n g) = Hit d p n (Entity g mat)
 instance Intersectable Entity where
     intersect ray entity@(Entity geom _) = liftIntersection entity . intersect ray $ geom
 
+cornellScene :: Scene
+cornellScene = Scene [leftWall, bottomWall, sphere0] [light0] where
+        sphere0    = Entity (Sphere (P$V3 0 0 0) 20) (Mat$Diffuse (V3 0.98 0 0))
+        leftWall   = Entity (Plane (normalize3(V3 1 0 0)) (100)) (Mat$Diffuse (V3 0.5 0.5 0.5))
+        bottomWall = Entity (Plane (normalize3(V3 0 1 0)) (100)) (Mat$Diffuse (V3 0.5 0.5 0.5))
+        light0     = OmniLight (P$V3 0 90 0, Brightness 1)
+
+cornellCamera = PinholeCamera sensor camPos camDir camUp camFocal  where
+        sensor   = Sensor (360, 240, camSize)
+        camPos = P $ V3 0 0 (-80)
+        camDir = normalize3( V3 0 0 1 )
+        camUp  = normalize3( V3 0 (-1) 0 )
+        camFocal = 1.0        -- 40mm
+        camSize  = V2 3.6 2.4 -- 35mm
+
 demoScene :: Scene
 demoScene = Scene [sphere0, sphere1, sphere2, plane0] [light0] where
         sphere0 = Entity (Sphere (P$V3 0 0 200) 20) (Mat$Diffuse (V3 0.98 0 0))

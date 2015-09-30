@@ -7,6 +7,7 @@ import Scene
 import Math
 import Light
 import Linear
+import Linear.Affine
 import Material
 import BRDF
 
@@ -46,8 +47,10 @@ pathTrace scene cameraRay' = bounce' geomHit where
         Ray (_, dir2light)  = shadowRay'
 
         reflectedLight = case traceRay scene (Just entity') shadowRay' of
-            Environment -> evalBRDF brdf hit dir2light . eval $ light -- shadow ray is traced to the light - 100% diffuse reflection
-            Hit {}      -> envEnergy                                  -- light is shadowed by some object
+            Environment -> brdfReflEnergy                                           -- shadow ray is traced to the light - 100% diffuse reflection
+            Hit t _ _ _ -> if t < (distance ipoint (lightPos light)) then envEnergy else brdfReflEnergy   -- light is shadowed by some object
+
+        brdfReflEnergy = evalBRDF brdf hit dir2light . eval $ light
 
 imageSample :: Camera cam => Scene -> cam -> UnitSpace -> Energy
 imageSample scene camera = method scene . cameraRay camera
