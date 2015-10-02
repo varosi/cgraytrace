@@ -48,7 +48,7 @@ pathTrace g0 scene cameraRay' = bounce' g0 geomHit where
 
         reflectedLight = case traceRay scene (Just entity') shadowRay' of
             Environment -> brdfReflEnergy                                           -- shadow ray is traced to the light - 100% diffuse reflection
-            Hit t _ _ _ -> if t < (distance ipoint (lightPos light)) then envEnergy else brdfReflEnergy   -- light is shadowed by some object
+            Hit t _ _ _ -> if t < distance ipoint (lightPos light) then envEnergy else brdfReflEnergy   -- light is shadowed by some object
 
         brdfReflEnergy = evalBRDF brdf hit dir2light . eval $ light
 

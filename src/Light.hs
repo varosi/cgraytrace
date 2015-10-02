@@ -33,13 +33,13 @@ instance Shadow gen Light where
     shadowRay gen (RectLight (ptC, side0, side1, _)) point' = (Ray (point', dir), gen'') where
         dir             = normalize3 (pt .-. point')
         pt              = ptC .+^ (vpt0 + vpt1)
-        (vpt0, vpt1)    = ((side0 ^* sampleX), (side1 ^* sampleY))
+        (vpt0, vpt1)    = (side0 ^* sampleX, side1 ^* sampleY)
         (ran_x, gen')   = next gen
         (ran_y, gen'')  = next gen'
         (sampleX, sampleY) = (inRange ran_x, inRange ran_y) :: (Float, Float)
 
         inRange :: Int -> Float
-        inRange i       = 0.5 * (fromIntegral i) / (fromIntegral (maxBound :: Int))
+        inRange i       = 0.5 * fromIntegral i / fromIntegral (maxBound :: Int)
 
     eval (OmniLight (_, Brightness e)) = Energy e
 
