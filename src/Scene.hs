@@ -33,7 +33,7 @@ cornellScene = Scene [leftWall, rightWall, bottomWall, backWall, topWall, sphere
         topWall    = Entity (Plane (normalize3(V3 0 (-1) 0)) (100)) (Mat$Diffuse (V3 0.5 0.5 0.5))
 
         light0     = OmniLight (P$V3 0 80 0, Brightness 1)
-        light1     = RectLight (P$V3 0 90 0, V3 20 0 0, V3 0 0 20, Brightness 1)
+        light1     = RectLight (P$V3 0 85 0, V3 40 0 0, V3 0 0 40, Brightness 1)
 
 cornellCamera = PinholeCamera sensor camPos' camDir' camUp' camFocal  where
         sensor   = Sensor (360, 240, camSize)

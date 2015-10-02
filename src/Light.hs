@@ -15,6 +15,10 @@ envEnergy = Energy $ V3 (0/255) (0/255) (0/255)
 
 newtype Energy = Energy Color deriving (Num, Show)    -- R, G, B components of energy that we sense
 
+integrateEnergy :: [Energy] -> Energy
+integrateEnergy xs = Energy (sum ^* (1/count)) where
+    (sum, count) = foldl (\(acc,cnt) (Energy e) -> (acc + e, cnt+1)) (V3 0 0 0, 0) xs
+
 class Shadow gen light where
     shadowRay :: RandomGen gen => gen -> light -> Coord3 -> (Ray, gen)
     eval      :: light -> Energy

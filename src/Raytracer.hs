@@ -11,6 +11,8 @@ import Material
 import BRDF
 import System.Random (RandomGen(..))
 
+lightSamplesCount = 20
+
 -- rayCast (with depth) or pathTrace
 method :: RandomGen gen => gen -> Scene -> Ray -> (Energy, gen)
 method = pathTrace
@@ -36,11 +38,14 @@ rayCast :: Scene -> Ray -> Energy
 rayCast scene = depthMap . traceRay scene Nothing
 
 pathTrace :: RandomGen gen => gen -> Scene -> Ray -> (Energy, gen)
-pathTrace g0 scene cameraRay' = bounce' g0 geomHit where
+pathTrace g0 scene cameraRay' = (lightEnergy, g'') where
     geomHit = traceRay scene Nothing cameraRay'
 
-    bounce' g Environment                  = (envEnergy, g)
-    bounce' g hit@(Hit _ ipoint _ entity') = (reflectedLight, g') where
+    (lightSamples, g'') = foldl (\(xs, g) _ -> let (e, g') = bounce2light g geomHit in (e:xs, g')) ([], g0) [1..lightSamplesCount]
+    lightEnergy         = integrateEnergy lightSamples
+
+    bounce2light g Environment                  = (envEnergy, g)
+    bounce2light g hit@(Hit _ ipoint _ entity') = (reflectedLight, g') where
         Mat brdf            = enMaterial entity'
         light               = head . scLights $ scene                        -- Single light support currently
         (shadowRay', g')    = shadowRay g light ipoint
