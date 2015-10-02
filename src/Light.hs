@@ -17,7 +17,8 @@ newtype Energy = Energy Color deriving (Num, Show)    -- R, G, B components of e
 
 integrateEnergy :: [Energy] -> Energy
 integrateEnergy xs = Energy (sum ^* (1/count)) where
-    (sum, count) = foldl (\(acc,cnt) (Energy e) -> (acc + e, cnt+1)) (V3 0 0 0, 0) xs
+    (sum, count) = foldl (\(acc,cnt) e -> (acc + e, cnt+1)) (V3 0 0 0, 0) . map energyColor $ xs
+    energyColor (Energy c) = c
 
 class Shadow gen light where
     shadowRay :: RandomGen gen => gen -> light -> Coord3 -> (Ray, gen)
