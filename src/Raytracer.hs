@@ -2,17 +2,17 @@ module Raytracer( raytrace, Geometry, Scene, Sensor(..), Camera(..), traceRay, p
 
 import Camera
 import Geometry
-import Codec.Picture.Types (Image(..), PixelRGB8(..), generateImage)
+import Codec.Picture.Types (Image(..), PixelRGB8(..), generateFoldImage)
 import Scene
 import Math
 import Light
 import Linear
-import Linear.Affine
 import Material
 import BRDF
+import System.Random (RandomGen(..))
 
 -- rayCast (with depth) or pathTrace
-method :: Scene -> Ray -> Energy
+method :: RandomGen gen => gen -> Scene -> Ray -> (Energy, gen)
 method = pathTrace
 
 mapEnergy :: Energy -> PixelRGB8
@@ -35,15 +35,15 @@ traceRay scene toSkip ray = foldl closest Environment . map (intersect ray) . sk
 rayCast :: Scene -> Ray -> Energy
 rayCast scene = depthMap . traceRay scene Nothing
 
-pathTrace :: Scene -> Ray -> Energy
-pathTrace scene cameraRay' = bounce' geomHit where
+pathTrace :: RandomGen gen => gen -> Scene -> Ray -> (Energy, gen)
+pathTrace g0 scene cameraRay' = bounce' g0 geomHit where
     geomHit = traceRay scene Nothing cameraRay'
 
-    bounce' Environment             = envEnergy
-    bounce' hit@(Hit _ ipoint _ entity') = reflectedLight where
+    bounce' g Environment                  = (envEnergy, g)
+    bounce' g hit@(Hit _ ipoint _ entity') = (reflectedLight, g') where
         Mat brdf            = enMaterial entity'
         light               = head . scLights $ scene                        -- Single light support currently
-        shadowRay'          = shadowRay light ipoint
+        (shadowRay', g')    = shadowRay g light ipoint
         Ray (_, dir2light)  = shadowRay'
 
         reflectedLight = case traceRay scene (Just entity') shadowRay' of
@@ -52,11 +52,12 @@ pathTrace scene cameraRay' = bounce' geomHit where
 
         brdfReflEnergy = evalBRDF brdf hit dir2light . eval $ light
 
-imageSample :: Camera cam => Scene -> cam -> UnitSpace -> Energy
-imageSample scene camera = method scene . cameraRay camera
+imageSample :: RandomGen gen => gen -> Camera cam => Scene -> cam -> UnitSpace -> (Energy, gen)
+imageSample g scene camera = method g scene . cameraRay camera
 
 -- Ray-trace whole image viewed by camera
-raytrace :: Camera cam => Scene -> cam -> Image PixelRGB8
-raytrace scene camera = generateImage pixelColor width height where
-    pixelColor x y                     = mapEnergy . imageSample scene camera $ toScreenSpace sensor x y
+raytrace :: (RandomGen gen, Camera cam) => gen -> Scene -> cam -> (gen, Image PixelRGB8)
+raytrace gen scene camera = generateFoldImage pixelColor gen width height where
+    pixelColor g x y = (g', mapEnergy e) where
+            (e, g') = imageSample g scene camera $ toScreenSpace sensor x y
     sensor@(Sensor (width, height, _)) = cameraSensor camera

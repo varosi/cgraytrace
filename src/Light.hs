@@ -1,9 +1,11 @@
+{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 module Light where
 
 import Math
 import Linear
 import Linear.Affine
+import System.Random (RandomGen(..))
 
 type Color = V3 Float
 
@@ -13,19 +15,36 @@ envEnergy = Energy $ V3 (0/255) (0/255) (0/255)
 
 newtype Energy = Energy Color deriving (Num, Show)    -- R, G, B components of energy that we sense
 
-class Shadow light where
-    shadowRay :: light -> Coord3 -> Ray
+class Shadow gen light where
+    shadowRay :: RandomGen gen => gen -> light -> Coord3 -> (Ray, gen)
     eval      :: light -> Energy
     lightPos  :: light -> Coord3
 
 newtype Brightness = Brightness Color deriving Show
 
-data Light = OmniLight (Coord3, Brightness) deriving Show
+data Light = OmniLight (Coord3, Brightness) |                   -- center, brightness
+             RectLight (Coord3, Vec3, Vec3, Brightness)         -- center, side0, side1, brightness
+                deriving Show
 
-instance Shadow Light where
-    shadowRay (OmniLight (pos, _)) point' = Ray (point', dir) where
+instance Shadow gen Light where
+    shadowRay gen (OmniLight (pos, _)) point' = (Ray (point', dir), gen) where
         dir = normalize3( pos .-. point' )
+
+    shadowRay gen (RectLight (ptC, side0, side1, _)) point' = (Ray (point', dir), gen'') where
+        dir             = normalize3 (pt .-. point')
+        pt              = ptC .+^ (vpt0 + vpt1)
+        (vpt0, vpt1)    = ((side0 ^* sampleX), (side1 ^* sampleY))
+        (ran_x, gen')   = next gen
+        (ran_y, gen'')  = next gen'
+        (sampleX, sampleY) = (inRange ran_x, inRange ran_y) :: (Float, Float)
+
+        inRange :: Int -> Float
+        inRange i       = 0.5 * (fromIntegral i) / (fromIntegral (maxBound :: Int))
 
     eval (OmniLight (_, Brightness e)) = Energy e
 
+    eval (RectLight (_, _, _, Brightness e)) = Energy e
+
     lightPos (OmniLight (pos, _)) = pos
+
+    lightPos (RectLight (pos, _, _, _)) = pos

@@ -4,7 +4,7 @@ import Linear
 import Linear.Affine
 
 type Vec3   = V3 Float
-type Coord3 = Point V3 Float              -- World coordinate system
+type Coord3 = Point V3 Float                     -- World coordinate system
 
 newtype Ray = Ray (Coord3, Normal) deriving Show -- position & direction
 
