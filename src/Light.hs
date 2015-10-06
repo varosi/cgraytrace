@@ -2,7 +2,6 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 module Light where
 
-import GHC.Word
 import Math
 import Linear
 import Linear.Affine
@@ -17,8 +16,8 @@ envEnergy = Energy $ V3 (0/255) (0/255) (0/255)
 newtype Energy = Energy Color deriving (Num, Show)    -- R, G, B components of energy that we sense
 
 integrateEnergy :: [Energy] -> Energy
-integrateEnergy xs = Energy (sum ^* (1/count)) where
-    (sum, count) = foldl (\(acc,cnt) e -> (acc + e, cnt+1)) (V3 0 0 0, 0) . map energyColor $ xs
+integrateEnergy xs = Energy (sum' ^* (1/count)) where
+    (sum', count) = foldl (\(acc,cnt) e -> (acc + e, cnt+1)) (V3 0 0 0, 0) . map energyColor $ xs
     energyColor (Energy c) = c
 
 class Shadow gen light where
@@ -42,11 +41,7 @@ instance Shadow gen Light where
         (vpt0, vpt1)    = (side0 ^* sampleX, side1 ^* sampleY)
         (ran_x, gen')   = next gen
         (ran_y, gen'')  = next gen'
-        (sampleX, sampleY) = (inRange ran_x, inRange ran_y) :: (Float, Float)
-
-        inRange :: Int -> Float
-        -- inRange i       = 0.5 * fromIntegral i / fromIntegral (maxBound :: Int)
-        inRange i = fromIntegral i / fromIntegral (maxBound :: Word32)
+        (sampleX, sampleY) = (0.5* inRange ran_x, 0.5* inRange ran_y) :: (Float, Float)
 
     eval (OmniLight (_, Brightness e)) = Energy e
 

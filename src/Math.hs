@@ -1,6 +1,7 @@
 {-# LANGUAGE RankNTypes                #-}
 module Math where
 
+import GHC.Word
 import Linear
 import Linear.Affine
 
@@ -20,3 +21,8 @@ normalized (Normal v) = v
 
 clamp :: forall a. Ord a => a -> a -> a -> a
 clamp min' max' x = min (max min' x) max'
+
+
+inRange :: Int -> Float
+-- inRange i       = 0.5 * fromIntegral i / fromIntegral (maxBound :: Int)  -- for Mersene
+inRange i = 2* fromIntegral i / fromIntegral (maxBound :: Word32)              -- for Std random

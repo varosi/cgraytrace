@@ -14,7 +14,8 @@ import System.Random (RandomGen(..))
 import Control.Parallel
 import Control.DeepSeq
 
-lightSamplesCount = 20 :: Int
+lightSamplesCount :: Int
+lightSamplesCount = 20
 
 -- rayCast (with depth) or pathTrace
 method :: RandomGen gen => gen -> Scene -> Ray -> (Energy, gen)
