@@ -40,7 +40,7 @@ instance Camera OrthoCamera where
           vpos3         = V3 (x*aspect) y 0.0
           start         = orthoPos cam .+^ (vpos3 *! view)
 
-          xaxis         = normalize( cross (normalized.orthoUp$cam) zaxis )
+          xaxis         = normalize( cross (normalized.orthoUp $ cam) zaxis )
           yaxis         = cross zaxis xaxis
           zaxis         = normalized( orthoDir cam )
 
@@ -60,7 +60,7 @@ instance Camera PinholeCamera where
         v        = d ^* phcamFocalLength cam - vpos3
         proj     = v *! view
 
-        xaxis    = normalize( cross( normalized.phcamUp$cam ) zaxis )
+        xaxis    = normalize( cross( normalized.phcamUp $ cam ) zaxis )
         yaxis    = cross zaxis xaxis
         zaxis    = normalized( phcamDir cam )
 

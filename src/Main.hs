@@ -2,6 +2,8 @@
 {-# LANGUAGE QuasiQuotes               #-}
 {-# LANGUAGE TemplateHaskell           #-}
 {-# LANGUAGE TypeFamilies              #-}
+{-# LANGUAGE RankNTypes                #-}
+{-# LANGUAGE OverloadedStrings         #-}
 
 module Main where
 

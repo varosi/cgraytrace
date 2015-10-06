@@ -1,3 +1,4 @@
+{-# LANGUAGE RankNTypes                #-}
 module Math where
 
 import Linear
