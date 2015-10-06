@@ -1,3 +1,4 @@
+{-# LANGUAGE BangPatterns #-}
 module Raytracer( raytrace, Geometry, Scene, Sensor(..), Camera(..), traceRay, pathTrace ) where
 
 import Camera
@@ -10,8 +11,10 @@ import Linear
 import Material
 import BRDF
 import System.Random (RandomGen(..))
+import Control.Parallel
+import Control.DeepSeq
 
-lightSamplesCount = 20
+lightSamplesCount = 20 :: Int
 
 -- rayCast (with depth) or pathTrace
 method :: RandomGen gen => gen -> Scene -> Ray -> (Energy, gen)
@@ -63,7 +66,7 @@ imageSample g scene camera = method g scene . cameraRay camera
 -- Ray-trace whole image viewed by camera
 raytrace :: (RandomGen gen, Camera cam) => gen -> Scene -> cam -> (gen, Image PixelRGB8)
 raytrace gen scene camera = generateFoldImage pixelColor gen width height where
-    pixelColor g x y = (g', mapEnergy e) where
+    pixelColor g x y = (g', e `par` mapEnergy e) where
             (e, _)   = imageSample g scene camera $ toScreenSpace sensor x y
             (_, g')  = split g          -- make new generators
     sensor@(Sensor (width, height, _)) = cameraSensor camera
