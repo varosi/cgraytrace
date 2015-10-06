@@ -37,6 +37,7 @@ cornellScene = Scene [leftWall, rightWall, bottomWall, backWall, topWall, sphere
 
 cornellCamera = PinholeCamera sensor camPos' camDir' camUp' camFocal  where
         sensor   = Sensor (360, 240, camSize)
+        -- sensor   = Sensor (1280, 1024, camSize)
         camPos' = P $ V3 0 0 (-80)
         camDir' = normalize3( V3 0 0 1 )
         camUp'  = normalize3( V3 0 (-1) 0 )

@@ -2,6 +2,7 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 module Light where
 
+import GHC.Word
 import Math
 import Linear
 import Linear.Affine
@@ -44,7 +45,8 @@ instance Shadow gen Light where
         (sampleX, sampleY) = (inRange ran_x, inRange ran_y) :: (Float, Float)
 
         inRange :: Int -> Float
-        inRange i       = 0.5 * fromIntegral i / fromIntegral (maxBound :: Int)
+        -- inRange i       = 0.5 * fromIntegral i / fromIntegral (maxBound :: Int)
+        inRange i = fromIntegral i / fromIntegral (maxBound :: Word32)
 
     eval (OmniLight (_, Brightness e)) = Energy e
 

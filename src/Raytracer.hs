@@ -64,5 +64,6 @@ imageSample g scene camera = method g scene . cameraRay camera
 raytrace :: (RandomGen gen, Camera cam) => gen -> Scene -> cam -> (gen, Image PixelRGB8)
 raytrace gen scene camera = generateFoldImage pixelColor gen width height where
     pixelColor g x y = (g', mapEnergy e) where
-            (e, g') = imageSample g scene camera $ toScreenSpace sensor x y
+            (e, _)   = imageSample g scene camera $ toScreenSpace sensor x y
+            (_, g')  = split g          -- make new generators
     sensor@(Sensor (width, height, _)) = cameraSensor camera
