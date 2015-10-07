@@ -27,15 +27,15 @@ mkDiffuse r g b = (Mat$Diffuse (transfer r g b))
 
 cornellScene :: Scene
 cornellScene = Scene [leftWall, rightWall, bottomWall, backWall, topWall, sphere0] [light1] where
-        sphere0    = Entity (Sphere (P$V3 0 (-50) 0) 20)            (mkDiffuse 0.98 0.98 0)
-        leftWall   = Entity (Plane (normalize3(V3 1 0 0)) (100))    (mkDiffuse 0.98 0 0)
-        rightWall  = Entity (Plane (normalize3(V3 (-1) 0 0)) (100)) (mkDiffuse 0 0.98 0)
-        bottomWall = Entity (Plane (normalize3(V3 0 1 0)) (100))    (mkDiffuse 0.5 0.5 0.5)
-        backWall   = Entity (Plane (normalize3(V3 0 0 (-1))) (100)) (mkDiffuse 0.5 0.5 0.5)
-        topWall    = Entity (Plane (normalize3(V3 0 (-1) 0)) (100)) (mkDiffuse 0.5 0.5 0.5)
+        sphere0    = Entity (Sphere (P$V3 0 (-50) 0) 20)            (mkDiffuse 0.30 0.30 0)
+        leftWall   = Entity (Plane (normalize3(V3 1 0 0)) (100))    (mkDiffuse 0.18 0 0)
+        rightWall  = Entity (Plane (normalize3(V3 (-1) 0 0)) (100)) (mkDiffuse 0 0.18 0)
+        bottomWall = Entity (Plane (normalize3(V3 0 1 0)) (100))    (mkDiffuse 0.18 0.18 0.18)
+        backWall   = Entity (Plane (normalize3(V3 0 0 (-1))) (100)) (mkDiffuse 0.18 0.18 0.18)
+        topWall    = Entity (Plane (normalize3(V3 0 (-1) 0)) (100)) (mkDiffuse 0.18 0.18 0.18)
 
-        light0     = OmniLight (P$V3 0 80 0, Brightness 1)
-        light1     = RectLight (P$V3 0 85 0, V3 40 0 0, V3 0 0 40, Brightness 1)
+        light0     = OmniLight (P$V3 0 80 0, Brightness 3)
+        light1     = RectLight (P$V3 0 85 0, V3 40 0 0, V3 0 0 40, Brightness 5)
 
 cornellCamera = PinholeCamera sensor camPos' camDir' camUp' camFocal  where
         sensor   = Sensor (360, 240, camSize)

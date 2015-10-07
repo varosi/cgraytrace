@@ -20,11 +20,11 @@ lightSamplesCount = 20
 
 -- rayCast (with depth) or pathTrace
 method :: RandomGen gen => gen -> Scene -> Ray -> (Energy, gen)
-method = pathTrace 5
+method = pathTrace 3
 
 mapEnergy :: Energy -> PixelRGB8
 mapEnergy (Energy( P( V3 r g b )) ) = PixelRGB8 (f2w r) (f2w g) (f2w b) where
-        f2w f = truncate (f * 255)
+        f2w f = truncate $ ((min 1 f) * 255)
 
 depthMap :: Intersection a -> Energy
 depthMap Environment = envEnergy
