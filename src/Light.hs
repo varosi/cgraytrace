@@ -7,18 +7,22 @@ import Linear
 import Linear.Affine
 import System.Random (RandomGen(..))
 
-type Color = V3 Float
+type Color = Point V3 Float   -- absolute point in color space
 
 envEnergy :: Energy
+envEnergy = Energy( P( V3 0 0 0 ) )
 -- envEnergy = Energy $ V3 (28.0/255) (115.0/255) (136.0/255)
-envEnergy = Energy $ V3 (0/255) (0/255) (0/255)
 
-newtype Energy = Energy Color deriving (Num, Show)    -- R, G, B components of energy that we sense
+newtype Energy         = Energy Color           deriving (Num, Show, Eq)      -- R, G, B components of energy that we sense
+newtype EnergyTransfer = EnergyTrans (V3 Float) deriving (Num, Show, Eq)      -- delta energy - like vector in color space
 
-integrateEnergy :: [Energy] -> Energy
-integrateEnergy xs = Energy (sum' ^* (1/count)) where
+averageEnergy :: [Energy] -> Energy
+averageEnergy xs = Energy . P $ sum' ^* (1/count) where
     (sum', count) = foldl (\(acc,cnt) e -> (acc + e, cnt+1)) (V3 0 0 0, 0) . map energyColor $ xs
-    energyColor (Energy c) = c
+    energyColor (Energy (P c)) = c
+
+attenuateWith :: Energy -> EnergyTransfer -> Energy
+attenuateWith (Energy(P e)) (EnergyTrans trans) = Energy( P( e * trans ))
 
 class Shadow gen light where
     shadowRay :: RandomGen gen => gen -> light -> Coord3 -> (Ray, gen)

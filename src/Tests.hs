@@ -21,9 +21,9 @@ prop_clamp3 = clamp (0 :: Float) 1 10    == 1
 
 testScene :: Scene
 testScene = Scene [sphere0, sphere1, plane0] [light0] where
-        sphere0 = Entity (Sphere (P$V3 0 0 200) 20) (Mat$Diffuse (V3 0.98 0 0))
-        sphere1 = Entity (Sphere (P$V3 5 35 200) 25) (Mat$Diffuse (V3 0 0.98 0))
-        plane0  = Entity (Plane (normalize3(V3 0 1 (-0.5))) 100) (Mat$Diffuse (V3 0.5 0.5 0.5))
+        sphere0 = Entity (Sphere (P$V3 0 0 200) 20) (mkDiffuse 0.98 0 0)
+        sphere1 = Entity (Sphere (P$V3 5 35 200) 25) (mkDiffuse 0 0.98 0)
+        plane0  = Entity (Plane (normalize3(V3 0 1 (-0.5))) 100) (mkDiffuse 0.5 0.5 0.5)
         light0  = OmniLight (P$V3 (0) (0) 0, Brightness 1)
 
 --testIt :: String
