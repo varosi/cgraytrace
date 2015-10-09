@@ -7,6 +7,7 @@ module Math(    Ray(..), Vec3, Coord3,
 import GHC.Word
 import Linear
 import Linear.Affine
+import System.Random (RandomGen(..))
 
 type Vec3   = V3 Float
 type Coord3 = Point V3 Float                     -- World coordinate system
@@ -26,10 +27,10 @@ normalized (Normal v) = v
 clamp :: forall a. Ord a => a -> a -> a -> a
 clamp min' max' x = min (max min' x) max'
 
--- Used to calculate random Word32 numbers into Float
-inRange :: Int -> Float
--- inRange i       = 0.5 * fromIntegral i / fromIntegral (maxBound :: Int)  -- for Mersene
-inRange i = 2* fromIntegral i / fromIntegral (maxBound :: Word32)           -- for Std random
+-- Used to calculate random Word32 numbers into Float [0,1]
+inRange :: RandomGen g => g -> Int -> Float
+inRange gen i = (fromIntegral (i - min')) / (fromIntegral (max' - min')) where
+    (min', max') = genRange gen
 
 
 data SphericalVec = SphereV !Float !Float !Float

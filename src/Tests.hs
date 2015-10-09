@@ -3,6 +3,7 @@ import Test.QuickCheck
 import Test.Hspec
 import Math
 
+import GHC.Word
 import Scene
 import Geometry
 import Linear
@@ -10,7 +11,11 @@ import Linear.Affine
 import Light
 import Material
 import BRDF
+import Debug.Trace
 --import Raytracer
+
+import System.Random.TF.Gen (seedTFGen)
+import System.Random (RandomGen(..))
 
 prop_clamp0 :: Int -> Bool
 prop_clamp0 a = res >= 0 && res <= 1 where res = clamp 0 1 a
@@ -47,6 +52,12 @@ testScene = Scene [sphere0, sphere1, plane0] [light0] where
 --        light     = head . scLights $ testingScene
 --        lightDist = distance ipoint (lightPos light)
 
+prop_inrange :: Word64 -> Word64 -> Word64 -> Word64 -> Bool
+prop_inrange a b c d = (value >= 0) && (value <= 1) where
+        (v, _) = next gen
+        value  = inRange gen . fromIntegral $ v
+        gen    = seedTFGen $ (a,b,c,d)
+
 main :: IO ()
 main = hspec $ do
         --describe "Math.clamp" $ do
@@ -63,3 +74,7 @@ main = hspec $ do
         describe "Math toSpherical and back" $ do
             it "should be equal from-to" $ do
                 property prop_polar2
+
+        describe "Math.inRange" $ do
+            it "[0,1]" $ do
+                property prop_inrange
