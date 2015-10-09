@@ -1,5 +1,6 @@
 module Tests where
 import Test.QuickCheck
+import Test.Hspec
 import Math
 
 import Scene
@@ -18,6 +19,12 @@ prop_clamp1, prop_clamp2, prop_clamp3 :: Bool
 prop_clamp1 = clamp (0 :: Float) 1 0.5   == 0.5
 prop_clamp2 = clamp (0 :: Float) 1 (-10) == 0
 prop_clamp3 = clamp (0 :: Float) 1 10    == 1
+
+prop_polar0 x y z = r >= 0                || (x == 0 && y == 0 && z == 0)   where SphereV r _ _ = toSpherical $ V3 x y z
+prop_polar1 x y z = (t >= -pi && t <= pi) || (x == 0 && y == 0 && z == 0)   where SphereV _ t _ = toSpherical $ V3 x y z
+prop_polar2 x y z = (distance v1 v2 <= 1e-6) || (dot v1 v1 <= 1e-3)  where
+        v1 = V3 x y z
+        v2 = fromSpherical . toSpherical $ v1
 
 testScene :: Scene
 testScene = Scene [sphere0, sphere1, plane0] [light0] where
@@ -41,9 +48,18 @@ testScene = Scene [sphere0, sphere1, plane0] [light0] where
 --        lightDist = distance ipoint (lightPos light)
 
 main :: IO ()
-main = do
-        --putStrLn testIt
+main = hspec $ do
+        --describe "Math.clamp" $ do
+            --it "should return between 0 and 1" $ do
+                --quickCheck prop_clamp0
+                -- mapM_ quickCheck [prop_clamp1, prop_clamp2, prop_clamp3]
 
-        putStrLn "QuickCheck ------\n"
-        quickCheck prop_clamp0
-        mapM_ quickCheck [prop_clamp1, prop_clamp2, prop_clamp3]
+        describe "Math.toSpherical" $ do
+            it "should return positive radius" $ do
+                property prop_polar0
+            it "should return -pi..pi theta angle" $ do
+                property prop_polar1
+
+        describe "Math toSpherical and back" $ do
+            it "should be equal from-to" $ do
+                property prop_polar2

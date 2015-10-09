@@ -28,12 +28,9 @@ instance BRDF BRDFs a where
         (ran_theta, gen') = next gen
         (ran_phi, gen'')  = next gen'
 
-        -- surface normal
-        V3 x y z = normalized inormal
-        r     = sqrt (x*x + y*y + z*z)
-        theta = acos (z/r)
-        phi   = atan (y/x)
+        SphereV _ theta phi = toSpherical . normalized $ inormal
 
-        dir = V3 (sin theta' * cos phi') (sin theta' * sin phi') (cos theta')
-        theta' = (inRange ran_theta * 0.5 * pi) + theta
-        phi'   = (inRange ran_phi * 2 * pi) + phi
+        theta' = ((inRange ran_theta * 2 * pi) - pi) + theta
+        phi'   = (inRange ran_phi * pi) + phi
+
+        dir    = fromSpherical( SphereV 1 theta' phi' )
