@@ -45,7 +45,7 @@ instance Shadow gen Light where
         (vpt0, vpt1)    = (side0 ^* sampleX, side1 ^* sampleY)
         (ran_x, gen')   = next gen
         (ran_y, gen'')  = next gen'
-        (sampleX, sampleY) = ((inRange gen ran_x) - 0.5, (inRange gen' ran_y) - 0.5) :: (Float, Float)
+        (sampleX, sampleY) = (inRange gen ran_x - 0.5, inRange gen' ran_y - 0.5) :: (Float, Float)
 
     eval (OmniLight (_, Brightness e)) = Energy e
 

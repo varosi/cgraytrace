@@ -23,12 +23,13 @@ liftIntersection (Entity _ mat) (Hit d p n g) = Hit d p n (Entity g mat)
 instance Intersectable Entity where
     intersect ray entity@(Entity geom _) = liftIntersection entity . intersect ray $ geom
 
-mkDiffuse r g b = (Mat$Diffuse (transfer r g b))
+mkDiffuse :: Float -> Float -> Float -> Material
+mkDiffuse r g b = Mat$Diffuse (transfer r g b)
 
 cornellScene :: Scene
 cornellScene = Scene [leftWall, rightWall, bottomWall, backWall, topWall, sphere0] [light1] where
         sphere0    = Entity (Sphere (P$V3 0 (-50) 0) 20)            (mkDiffuse 0.30 0.30 0)
-        leftWall   = Entity (Plane (normalize3(V3 1 0 0)) (100))    (mkDiffuse 0.18 0 0)
+        leftWall   = Entity (Plane (normalize3(V3 1 0 0)) (100))    (mkDiffuse 6.18 0 0)
         rightWall  = Entity (Plane (normalize3(V3 (-1) 0 0)) (100)) (mkDiffuse 0.08 0.08 0.08)
         bottomWall = Entity (Plane (normalize3(V3 0 1 0)) (100))    (mkDiffuse 0.08 0.08 0.08)
         backWall   = Entity (Plane (normalize3(V3 0 0 (-1))) (100)) (mkDiffuse 0.08 0.08 0.08)

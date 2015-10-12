@@ -1,4 +1,3 @@
-{-# LANGUAGE BangPatterns #-}
 module Raytracer( raytrace, Geometry, Scene, Sensor(..), Camera(..), traceRay, pathTrace ) where
 
 import Camera
@@ -13,18 +12,18 @@ import Material
 import BRDF
 import System.Random (RandomGen(..))
 import Control.Parallel
-import Control.DeepSeq
+-- import Control.DeepSeq
 
 lightSamplesCount :: Int
 lightSamplesCount = 20
 
 -- rayCast (with depth) or pathTrace
 method :: RandomGen gen => gen -> Scene -> Ray -> (Energy, gen)
-method = pathTrace 1
+method = pathTrace 2
 
 mapEnergy :: Energy -> PixelRGB8
 mapEnergy (Energy( P( V3 r g b )) ) = PixelRGB8 (f2w r) (f2w g) (f2w b) where
-        f2w f = truncate $ ((min 1 f) * 255)
+        f2w f = truncate (min 1 f * 255)
 
 depthMap :: Intersection a -> Energy
 depthMap Environment = envEnergy
@@ -44,9 +43,9 @@ rayCast scene = depthMap . traceRay scene Nothing
 
 pathTrace :: RandomGen gen => Int -> gen -> Scene -> Ray -> (Energy, gen)
 pathTrace 0 g _ _                        = (envEnergy, g)
-pathTrace levelsLeft g0 scene ray@(Ray (_, shootDir)) = next geomHit where
+pathTrace levelsLeft g0 scene ray@(Ray (_, shootDir)) = next' geomHit where
     geomHit         = traceRay scene Nothing ray
-    dir2viewer      = normalize3( (normalized shootDir) ^* (-1) )
+    dir2viewer      = normalize3( normalized shootDir ^* (-1) )
 
     (lightSamples, g'') = foldl (\(xs, g) _ -> let (e, g') = bounce2light g geomHit in (e:xs, g')) ([], g0) [1..lightSamplesCount]
     lightEnergy         = averageEnergy lightSamples
@@ -62,13 +61,13 @@ pathTrace levelsLeft g0 scene ray@(Ray (_, shootDir)) = next geomHit where
             Environment -> brdfReflEnergy                                           -- shadow ray is traced to the light - 100% diffuse reflection
             Hit t _ _ _ -> if t < distance ipoint (lightPos light) then envEnergy else brdfReflEnergy   -- light is shadowed by some object
 
-        brdfReflEnergy = lightEnergy `attenuateWith` brdfTransfer where
-                lightEnergy = eval light
+        brdfReflEnergy = lightEnergy' `attenuateWith` brdfTransfer where
+                lightEnergy' = eval light
                 brdfTransfer = evalBRDF brdf hit dir2viewer dir2light
 
     -- Next path segment calculations
-    next Environment            = (envEnergy, g0)              -- environment irradiance
-    next hit@(Hit _ _ _ entity) = (totalEnergy, gLast) where
+    next' Environment            = (envEnergy, g0)              -- environment irradiance
+    next' hit@(Hit _ _ _ entity) = (totalEnergy, gLast) where
             (irradiance, gLast) = pathTrace (levelsLeft-1) g''' scene ray'
             Mat brdf                     = enMaterial entity
             (ray'@(Ray (_, dir')), g''') = generateRay g'' brdf hit -- from BRDF

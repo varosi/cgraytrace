@@ -4,7 +4,6 @@ module Math(    Ray(..), Vec3, Coord3,
                 clamp, inRange,
                 SphericalVec(..), toSpherical, fromSpherical ) where
 
-import GHC.Word
 import Linear
 import Linear.Affine
 import System.Random (RandomGen(..))
@@ -27,19 +26,25 @@ normalized (Normal v) = v
 clamp :: forall a. Ord a => a -> a -> a -> a
 clamp min' max' x = min (max min' x) max'
 
--- Used to calculate random Word32 numbers into Float [0,1]
+-- Calculate random Word32 numbers into Float [0,1]
 inRange :: RandomGen g => g -> Int -> Float
-inRange gen i = (fromIntegral (i - min')) / (fromIntegral (max' - min')) where
+inRange gen i = fromIntegral (i - min') / fromIntegral (max' - min') where
     (min', max') = genRange gen
 
-
-data SphericalVec = SphereV !Float !Float !Float
+-- theta The elevation angle in the range [-pi/2, pi/2]
+-- phi The azimuth angle in the range [0, 2*pi]
+data SphericalVec = SphereV !Float !Float !Float -- length, theta, phi
 
 toSpherical :: V3 Float -> SphericalVec
 toSpherical (V3 x y z) = SphereV r theta phi where
         r     = sqrt (x*x + y*y + z*z)
-        theta = acos (z/r)
-        phi   = atan (y/x)
+        theta = asin (z/r)
+        phi'  = atan2 y x
+        phi   = if phi' < 0 then phi' + (2*pi) else phi'
 
+-- theta The elevation angle in the range [-pi/2, pi/2].
+-- phi The azimuth angle in the range [0, 2*pi].
 fromSpherical :: SphericalVec -> V3 Float
-fromSpherical (SphereV r theta phi) = V3 (sin theta * cos phi) (sin theta * sin phi) (cos theta)
+fromSpherical (SphereV r theta phi) = r *^ V3 (cos phi * thetaCos) (sin phi * thetaCos) thetaSin where
+        thetaCos = cos theta
+        thetaSin = sin theta
