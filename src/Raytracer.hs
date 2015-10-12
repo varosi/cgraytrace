@@ -15,11 +15,17 @@ import Control.Parallel
 -- import Control.DeepSeq
 
 lightSamplesCount :: Int
-lightSamplesCount = 20
+lightSamplesCount = 1
+
+secondaryGICount :: Int
+secondaryGICount = 15
+
+pathMaxDepth :: Int
+pathMaxDepth = 2
 
 -- rayCast (with depth) or pathTrace
 method :: RandomGen gen => gen -> Scene -> Ray -> (Energy, gen)
-method = pathTrace 2
+method = pathTrace pathMaxDepth
 
 mapEnergy :: Energy -> PixelRGB8
 mapEnergy (Energy( P( V3 r g b )) ) = PixelRGB8 (f2w r) (f2w g) (f2w b) where
@@ -38,41 +44,51 @@ traceRay scene toSkip ray = foldl closest Environment . map (intersect ray) . sk
         skip Nothing xs  = xs
         skip (Just e) xs = filter (/= e) xs
 
+shootMany :: (Num a, Enum a) => (t1 -> t -> (Energy, t1)) -> a -> t1 -> t -> (Energy, t1)
+shootMany shooter cnt g0 geomHit = (avgEnergy, g'') where
+    (lightSamples, g'') = foldl (\(xs, g) _ -> let (e, g') = shooter g geomHit in (e:xs, g')) ([], g0) [1..cnt]
+    avgEnergy           = averageEnergy lightSamples
+
 rayCast :: Scene -> Ray -> Energy
 rayCast scene = depthMap . traceRay scene Nothing
 
 pathTrace :: RandomGen gen => Int -> gen -> Scene -> Ray -> (Energy, gen)
-pathTrace 0 g _ _                        = (envEnergy, g)
-pathTrace levelsLeft g0 scene ray@(Ray (_, shootDir)) = next' geomHit where
-    geomHit         = traceRay scene Nothing ray
-    dir2viewer      = normalize3( normalized shootDir ^* (-1) )
+pathTrace maxDepth = pathTrace' maxDepth where
+    pathTrace' 0 g _ _                        = (envEnergy, g)
+    pathTrace' levelsLeft g0 scene ray@(Ray (_, shootDir)) = result where
+        geomHit        = traceRay scene Nothing ray
+        dir2viewer     = normalize3( normalized shootDir ^* (-1) )
+        giSamplesCount = if maxDepth - levelsLeft == 0 then secondaryGICount else 1
 
-    (lightSamples, g'') = foldl (\(xs, g) _ -> let (e, g') = bounce2light g geomHit in (e:xs, g')) ([], g0) [1..lightSamplesCount]
-    lightEnergy         = averageEnergy lightSamples
+        -- shadow rays shoot first
+        (lightEnergy, g'')       = shootMany bounce2light lightSamplesCount g0 geomHit
 
-    bounce2light g Environment                  = (envEnergy, g)
-    bounce2light g hit@(Hit _ ipoint _ entity') = (reflectedLight, g') where
-        Mat brdf            = enMaterial entity'
-        light               = head . scLights $ scene                        -- Single light support currently
-        (shadowRay', g')    = shadowRay g light ipoint
-        Ray (_, dir2light)  = shadowRay'
+        -- gi rays shoot
+        result@(giEnergy, g'''') = shootMany bounce2GI giSamplesCount g'' geomHit
 
-        reflectedLight = case traceRay scene (Just entity') shadowRay' of
-            Environment -> brdfReflEnergy                                           -- shadow ray is traced to the light - 100% diffuse reflection
-            Hit t _ _ _ -> if t < distance ipoint (lightPos light) then envEnergy else brdfReflEnergy   -- light is shadowed by some object
+        bounce2light g Environment                  = (envEnergy, g)
+        bounce2light g hit@(Hit _ ipoint _ entity') = (reflectedLight, g') where
+            Mat brdf            = enMaterial entity'
+            light               = head . scLights $ scene                        -- Single light support currently
+            (shadowRay', g')    = shadowRay g light ipoint
+            Ray (_, dir2light)  = shadowRay'
 
-        brdfReflEnergy = lightEnergy' `attenuateWith` brdfTransfer where
-                lightEnergy' = eval light
-                brdfTransfer = evalBRDF brdf hit dir2viewer dir2light
+            reflectedLight = case traceRay scene (Just entity') shadowRay' of
+                Environment -> brdfReflEnergy                                           -- shadow ray is traced to the light - 100% diffuse reflection
+                Hit t _ _ _ -> if t < distance ipoint (lightPos light) then envEnergy else brdfReflEnergy   -- light is shadowed by some object
 
-    -- Next path segment calculations
-    next' Environment            = (envEnergy, g0)              -- environment irradiance
-    next' hit@(Hit _ _ _ entity) = (totalEnergy, gLast) where
-            (irradiance, gLast) = pathTrace (levelsLeft-1) g''' scene ray'
-            Mat brdf                     = enMaterial entity
-            (ray'@(Ray (_, dir')), g''') = generateRay g'' brdf hit -- from BRDF
-            brdfTransfer                 = evalBRDF brdf hit dir2viewer dir'
-            totalEnergy                  = lightEnergy + (irradiance `attenuateWith` brdfTransfer)
+            brdfReflEnergy = lightEnergy' `attenuateWith` brdfTransfer where
+                    lightEnergy' = eval light
+                    brdfTransfer = evalBRDF brdf hit dir2viewer dir2light
+
+        -- Next path segment calculations
+        bounce2GI g0 Environment            = (envEnergy, g0)              -- environment irradiance
+        bounce2GI g0 hit@(Hit _ _ _ entity) = (totalEnergy, gLast) where
+                (irradiance, gLast) = pathTrace' (levelsLeft-1) g''' scene ray'
+                Mat brdf                     = enMaterial entity
+                (ray'@(Ray (_, dir')), g''') = generateRay g0 brdf hit -- from BRDF
+                brdfTransfer                 = evalBRDF brdf hit dir2viewer dir'
+                totalEnergy                  = lightEnergy + (irradiance `attenuateWith` brdfTransfer)
 
 imageSample :: RandomGen gen => gen -> Camera cam => Scene -> cam -> UnitSpace -> (Energy, gen)
 imageSample g scene camera = method g scene . cameraRay camera
