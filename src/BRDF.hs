@@ -32,7 +32,7 @@ instance BRDF BRDFs a where
 
         SphereV _ theta phi = toSpherical . normalized $ inormal
 
-        theta' = (((inRange gen ran_theta) * (pi/2)) - (pi/4) + theta)
-        phi'   = (((inRange gen' ran_phi) * pi) - (pi/2) + phi)
+        theta' = inRange gen ran_theta * (pi/2) - (pi/4) + theta
+        phi'   = inRange gen' ran_phi * pi - (pi/2) + phi
 
         dir    = fromSpherical( SphereV 1 theta' phi' )
