@@ -53,12 +53,14 @@ rayCast :: Scene -> Ray -> Energy
 rayCast scene = depthMap . traceRay scene Nothing
 
 pathTrace :: RandomGen gen => Int -> gen -> Scene -> Ray -> (Energy, gen)
-pathTrace maxDepth = pathTrace' maxDepth where
-    pathTrace' 0 g _ _                        = (envEnergy, g)
-    pathTrace' levelsLeft g0 scene ray@(Ray (_, shootDir)) = result where
-        geomHit        = traceRay scene Nothing ray
+pathTrace maxDepth = pathTrace' maxDepth Nothing where
+    pathTrace' 0 _ g _ _                        = (envEnergy, g)
+    pathTrace' levelsLeft prevHit g0 scene ray@(Ray (_, shootDir)) = result where
+        geomHit        = traceRay scene prevHit ray
         dir2viewer     = normalize3( normalized shootDir ^* (-1) )
-        giSamplesCount = if maxDepth - levelsLeft == 0 then secondaryGICount else 1
+
+        isCameraRay    = maxDepth - levelsLeft == 0
+        giSamplesCount = if isCameraRay then secondaryGICount else 1
 
         -- shadow rays shoot first
         (lightEnergy, g'')       = shootMany bounce2light lightSamplesCount g0 geomHit
@@ -84,7 +86,7 @@ pathTrace maxDepth = pathTrace' maxDepth where
         -- Next path segment calculations
         bounce2GI g0 Environment            = (envEnergy, g0)              -- environment irradiance
         bounce2GI g0 hit@(Hit _ _ _ entity) = (totalEnergy, gLast) where
-                (irradiance, gLast) = pathTrace' (levelsLeft-1) g''' scene ray'
+                (irradiance, gLast) = pathTrace' (levelsLeft-1) (Just entity) g''' scene ray'
                 Mat brdf                     = enMaterial entity
                 (ray'@(Ray (_, dir')), g''') = generateRay g0 brdf hit -- from BRDF
                 brdfTransfer                 = evalBRDF brdf hit dir2viewer dir'

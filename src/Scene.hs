@@ -44,7 +44,7 @@ cornellCamera = PinholeCamera sensor camPos' camDir' camUp' camFocal  where
         camPos' = P $ V3 0 0 (-80)
         camDir' = normalize3( V3 0 0 1 )
         camUp'  = normalize3( V3 0 (-1) 0 )
-        camFocal = 1.0        -- 40mm
+        camFocal = 1.0        -- 10mm
         camSize  = V2 3.6 2.4 -- 35mm
 
 demoScene :: Scene
