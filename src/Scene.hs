@@ -37,14 +37,14 @@ cornellScene = Scene [leftWall, rightWall, bottomWall, backWall, topWall, sphere
         sphere0    = Entity (Sphere (P$V3 0 (-50) 0) 20)            (mkDiffuse 0.80 0.80 0)
         leftWall   = Entity (Plane (normalize3(V3 1 0 0)) (100))    (mkDiffuse 0.28 0 0)
         rightWall  = Entity (Plane (normalize3(V3 (-1) 0 0)) (100)) (mkDiffuse 0.0 0.0 0.28)
-        bottomWall = Entity (Plane (normalize3(V3 0 1 0)) (100))    (mkDiffuse 0.88 0.88 0.88)
+        bottomWall = Entity (Plane (normalize3(V3 0 1 0)) (100))    (mkDiffuse 0.28 0.28 0.28)
         backWall   = Entity (Plane (normalize3(V3 0 0 (-1))) (100)) (mkDiffuse 0.18 0.18 0.18)
         topWall    = Entity (Plane (normalize3(V3 0 (-1) 0)) (100)) (mkDiffuse 0.18 0.18 0.18)
 
         light0     = OmniLight (P$V3 0 80 0, Brightness 5)
-        light1     = RectLight (P$V3 0 85 0, V3 40 0 0, V3 0 0 40, Brightness 5)
+        light1     = RectLight (P$V3 0 85 0, V3 40 0 0, V3 0 0 40, Brightness 3)
 
-        settings = Settings { rsLightSamplesCount = 10, rsSecondaryGICount = 5, rsPathMaxDepth = 4 }
+        settings = Settings { rsLightSamplesCount = 10, rsSecondaryGICount = 15, rsPathMaxDepth = 4 }
 
 cornellCamera = PinholeCamera sensor camPos' camDir' camUp' camFocal  where
         sensor   = Sensor (360, 240, camSize)

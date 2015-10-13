@@ -14,13 +14,16 @@ import System.Random (RandomGen(..))
 import Control.Parallel
 -- import Control.DeepSeq
 
+gamma       = 2.2
+invGamma    = 1/gamma
+
 -- rayCast (with depth) or pathTrace
 method :: RandomGen gen => gen -> Scene -> Ray -> (Energy, gen)
 method = pathTrace
 
 mapEnergy :: Energy -> PixelRGB8
 mapEnergy (Energy( P( V3 r g b )) ) = PixelRGB8 (f2w r) (f2w g) (f2w b) where
-        f2w f = truncate (min 1 f * 255)
+        f2w f = truncate ((min 1 (f**invGamma)) * 255)
 
 depthMap :: Intersection a -> Energy
 depthMap Environment = envEnergy
