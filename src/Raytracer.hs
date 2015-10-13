@@ -15,13 +15,13 @@ import Control.Parallel
 -- import Control.DeepSeq
 
 lightSamplesCount :: Int
-lightSamplesCount = 1
+lightSamplesCount = 10
 
 secondaryGICount :: Int
-secondaryGICount = 15
+secondaryGICount = 5
 
 pathMaxDepth :: Int
-pathMaxDepth = 2
+pathMaxDepth = 4
 
 -- rayCast (with depth) or pathTrace
 method :: RandomGen gen => gen -> Scene -> Ray -> (Energy, gen)
