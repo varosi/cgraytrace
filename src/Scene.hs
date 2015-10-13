@@ -13,8 +13,14 @@ data Entity = Entity {  enGeom      :: Geometry,
                         enMaterial  :: Material }
                         deriving (Eq, Show)
 
+data RenderSettings = Settings {
+                        rsLightSamplesCount :: Int,
+                        rsSecondaryGICount  :: Int,
+                        rsPathMaxDepth      :: Int }
+
 data Scene = Scene {    scEntities  :: [Entity],
-                        scLights    :: [Light] }
+                        scLights    :: [Light],
+                        scSettings  :: RenderSettings }
 
 liftIntersection :: Entity -> Intersection Geometry -> Intersection Entity
 liftIntersection _ Environment = Environment
@@ -27,7 +33,7 @@ mkDiffuse :: Float -> Float -> Float -> Material
 mkDiffuse r g b = Mat$Diffuse (transfer r g b)
 
 cornellScene :: Scene
-cornellScene = Scene [leftWall, rightWall, bottomWall, backWall, topWall, sphere0] [light1] where
+cornellScene = Scene [leftWall, rightWall, bottomWall, backWall, topWall, sphere0] [light1] settings where
         sphere0    = Entity (Sphere (P$V3 0 (-50) 0) 20)            (mkDiffuse 0.80 0.80 0)
         leftWall   = Entity (Plane (normalize3(V3 1 0 0)) (100))    (mkDiffuse 0.28 0 0)
         rightWall  = Entity (Plane (normalize3(V3 (-1) 0 0)) (100)) (mkDiffuse 0.0 0.0 0.28)
@@ -37,6 +43,8 @@ cornellScene = Scene [leftWall, rightWall, bottomWall, backWall, topWall, sphere
 
         light0     = OmniLight (P$V3 0 80 0, Brightness 5)
         light1     = RectLight (P$V3 0 85 0, V3 40 0 0, V3 0 0 40, Brightness 5)
+
+        settings = Settings { rsLightSamplesCount = 10, rsSecondaryGICount = 5, rsPathMaxDepth = 4 }
 
 cornellCamera = PinholeCamera sensor camPos' camDir' camUp' camFocal  where
         sensor   = Sensor (360, 240, camSize)
@@ -48,12 +56,13 @@ cornellCamera = PinholeCamera sensor camPos' camDir' camUp' camFocal  where
         camSize  = V2 3.6 2.4 -- 35mm
 
 demoScene :: Scene
-demoScene = Scene [sphere0, sphere1, sphere2, plane0] [light0] where
+demoScene = Scene [sphere0, sphere1, sphere2, plane0] [light0] settings where
         sphere0 = Entity (Sphere (P$V3 0 0 200) 20)                  (mkDiffuse 0.98 0 0)
         sphere1 = Entity (Sphere (P$V3 5 35 200) 25)                 (mkDiffuse 0 0.98 0)
         sphere2 = Entity (Sphere (P$V3 (-25) 20 180) 10)             (mkDiffuse 0 0.98 0.98)
         plane0  = Entity (Plane (normalize3(V3 0 0.5 (-0.5))) (150)) (mkDiffuse 0.5 0.5 0.5)
         light0  = OmniLight (P$V3 (-40) 80 0, Brightness 1)
+        settings = Settings { rsLightSamplesCount = 10, rsSecondaryGICount = 5, rsPathMaxDepth = 4 }
 
 demoCamera = demoCamera1
 

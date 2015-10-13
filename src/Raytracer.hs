@@ -14,18 +14,9 @@ import System.Random (RandomGen(..))
 import Control.Parallel
 -- import Control.DeepSeq
 
-lightSamplesCount :: Int
-lightSamplesCount = 10
-
-secondaryGICount :: Int
-secondaryGICount = 5
-
-pathMaxDepth :: Int
-pathMaxDepth = 4
-
 -- rayCast (with depth) or pathTrace
 method :: RandomGen gen => gen -> Scene -> Ray -> (Energy, gen)
-method = pathTrace pathMaxDepth
+method = pathTrace
 
 mapEnergy :: Energy -> PixelRGB8
 mapEnergy (Energy( P( V3 r g b )) ) = PixelRGB8 (f2w r) (f2w g) (f2w b) where
@@ -52,18 +43,20 @@ shootMany shooter cnt g0 geomHit = (avgEnergy, g'') where
 rayCast :: Scene -> Ray -> Energy
 rayCast scene = depthMap . traceRay scene Nothing
 
-pathTrace :: RandomGen gen => Int -> gen -> Scene -> Ray -> (Energy, gen)
-pathTrace maxDepth = pathTrace' maxDepth Nothing where
+pathTrace :: RandomGen gen => gen -> Scene -> Ray -> (Energy, gen)
+pathTrace gen scene = pathTrace' maxDepth Nothing gen scene where
+    maxDepth = rsPathMaxDepth.scSettings $ scene
+
     pathTrace' 0 _ g _ _                        = (envEnergy, g)
     pathTrace' levelsLeft prevHit g0 scene ray@(Ray (_, shootDir)) = result where
         geomHit        = traceRay scene prevHit ray
         dir2viewer     = normalize3( normalized shootDir ^* (-1) )
 
         isCameraRay    = maxDepth - levelsLeft == 0
-        giSamplesCount = if isCameraRay then secondaryGICount else 1
+        giSamplesCount = if isCameraRay then rsSecondaryGICount.scSettings $ scene else 1
 
         -- shadow rays shoot first
-        (lightEnergy, g'')       = shootMany bounce2light lightSamplesCount g0 geomHit
+        (lightEnergy, g'')       = shootMany bounce2light (rsLightSamplesCount.scSettings $ scene) g0 geomHit
 
         -- gi rays shoot
         result@(giEnergy, g'''') = shootMany bounce2GI giSamplesCount g'' geomHit

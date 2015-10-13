@@ -34,11 +34,12 @@ prop_polar3 x y z = (distance v1 v2 <= 1e-5)      || (dot v1 v1 <= 1e-5)  where
         v2 = normalize $ fromSpherical . toSpherical $ v1
 
 testScene :: Scene
-testScene = Scene [sphere0, sphere1, plane0] [light0] where
+testScene = Scene [sphere0, sphere1, plane0] [light0] settings where
         sphere0 = Entity (Sphere (P$V3 0 0 200) 20) (mkDiffuse 0.98 0 0)
         sphere1 = Entity (Sphere (P$V3 5 35 200) 25) (mkDiffuse 0 0.98 0)
         plane0  = Entity (Plane (normalize3(V3 0 1 (-0.5))) 100) (mkDiffuse 0.5 0.5 0.5)
         light0  = OmniLight (P$V3 (0) (0) 0, Brightness 1)
+        settings = Settings { rsLightSamplesCount = 1, rsSecondaryGICount = 1, rsPathMaxDepth = 1 }
 
 --testIt :: String
 --testIt = show lightDist ++ "\n" ++ show hit ++ "\n" ++ show reflectedLight ++ "\n" ++ show shadowRay' where
