@@ -14,6 +14,7 @@ import System.Random (RandomGen(..))
 import Control.Parallel
 -- import Control.DeepSeq
 
+gamma, invGamma :: Float
 gamma       = 2.2
 invGamma    = 1/gamma
 
@@ -38,7 +39,7 @@ traceRay scene toSkip raySeg = foldl closest Nothing . map (intersect raySeg) . 
         skip Nothing xs  = xs
         skip (Just e) xs = filter (/= e) xs
 
--- shootMany :: (Num a, Enum a) => (t1 -> t -> (Energy, t1)) -> a -> t1 -> Maybe t -> (Energy, t1)
+shootMany :: (Num a, Enum a) => (t1 -> t -> (Energy, t1)) -> a -> t1 -> Maybe t -> (Energy, t1)
 shootMany _ _ g0 Nothing                = (envEnergy, g0)
 shootMany shooter cnt g0 (Just geomHit) = (avgEnergy, g'') where
     (lightSamples, g'') = foldl (\(xs, g) _ -> let (e, g') = shooter g geomHit in (e:xs, g')) ([], g0) [1..cnt]
@@ -52,7 +53,7 @@ pathTrace gen scene = pathTrace' maxDepth Nothing gen where
     maxDepth = rsPathMaxDepth.scSettings $ scene
 
     pathTrace' 0 _ g _                                       = (envEnergy, g)
-    pathTrace' levelsLeft prevHit g0 raySeg@(RaySeg (Ray (_, shootDir), maxt)) = result where
+    pathTrace' levelsLeft prevHit g0 raySeg@(RaySeg (Ray (_, shootDir), _)) = result where
         geomHit        = traceRay scene prevHit raySeg
         dir2viewer     = normalize3( normalized shootDir ^* (-1) )
 
@@ -60,22 +61,22 @@ pathTrace gen scene = pathTrace' maxDepth Nothing gen where
         giSamplesCount = if isCameraRay then rsSecondaryGICount.scSettings $ scene else 1
 
         -- shadow rays shoot first
-        (lightEnergy, g'')       = shootMany bounce2light (rsLightSamplesCount.scSettings $ scene) g0 geomHit
+        (lightEnergy, g'') = shootMany bounce2light (rsLightSamplesCount.scSettings $ scene) g0 geomHit
 
         -- gi rays shoot
-        result                   = shootMany bounce2GI giSamplesCount g'' geomHit
+        result             = shootMany bounce2GI giSamplesCount g'' geomHit
 
         bounce2light g hit@(Hit _ ipoint _ entity') = (reflectedLight, g') where
             Mat brdf            = enMaterial entity'
             light               = scLight scene                        -- Single light support currently
             (shadowRaySeg, g')  = shadowRay g light ipoint
-            RaySeg (Ray (_, dir2light), _) = shadowRaySeg
 
             reflectedLight = case traceRay scene (Just entity') shadowRaySeg of
                 Nothing -> brdfReflEnergy    -- shadow ray is traced to the light - 100% diffuse reflection
                 Just _  -> envEnergy         -- light is shadowed by some object
 
             brdfReflEnergy = lightEnergy' `attenuateWith` brdfTransfer where
+                    RaySeg (Ray (_, dir2light), _) = shadowRaySeg
                     lightEnergy' = eval light
                     brdfTransfer = evalBRDF brdf hit dir2viewer dir2light
 

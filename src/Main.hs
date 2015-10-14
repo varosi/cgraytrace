@@ -12,8 +12,8 @@ import Codec.Picture.Png
 import Raytracer
 import Scene
 import System.Random.TF.Gen (seedTFGen)
-import System.Random (RandomGen(..))
-import System.Random.Mersenne.Pure64( newPureMT )
+-- import System.Random (RandomGen(..))
+-- import System.Random.Mersenne.Pure64( newPureMT )
 
 -- Little server to show us rendering result
 data App = App
@@ -26,7 +26,7 @@ getImageR = do
                 --gen <- liftIO newPureMT
                 -- gen <- liftIO newStdGen
                 let gen = seedTFGen (1,2,3,4)
-                let (_, image) = raytrace gen demoScene demoCamera
+                let (_, image) = raytrace gen cornellScene cornellCamera
                 sendResponse $ toTypedContent (typePng, toContent (encodePng image))
 
 main :: IO ()
