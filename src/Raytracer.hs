@@ -47,11 +47,11 @@ rayCast :: Scene -> Ray -> Energy
 rayCast scene = depthMap . traceRay scene Nothing
 
 pathTrace :: RandomGen gen => gen -> Scene -> Ray -> (Energy, gen)
-pathTrace gen scene = pathTrace' maxDepth Nothing gen scene where
+pathTrace gen scene = pathTrace' maxDepth Nothing gen where
     maxDepth = rsPathMaxDepth.scSettings $ scene
 
-    pathTrace' 0 _ g _ _                        = (envEnergy, g)
-    pathTrace' levelsLeft prevHit g0 scene ray@(Ray (_, shootDir)) = result where
+    pathTrace' 0 _ g _                                       = (envEnergy, g)
+    pathTrace' levelsLeft prevHit g0 ray@(Ray (_, shootDir)) = result where
         geomHit        = traceRay scene prevHit ray
         dir2viewer     = normalize3( normalized shootDir ^* (-1) )
 
@@ -62,7 +62,7 @@ pathTrace gen scene = pathTrace' maxDepth Nothing gen scene where
         (lightEnergy, g'')       = shootMany bounce2light (rsLightSamplesCount.scSettings $ scene) g0 geomHit
 
         -- gi rays shoot
-        result@(giEnergy, g'''') = shootMany bounce2GI giSamplesCount g'' geomHit
+        result                   = shootMany bounce2GI giSamplesCount g'' geomHit
 
         bounce2light g Environment                  = (envEnergy, g)
         bounce2light g hit@(Hit _ ipoint _ entity') = (reflectedLight, g') where
@@ -80,11 +80,11 @@ pathTrace gen scene = pathTrace' maxDepth Nothing gen scene where
                     brdfTransfer = evalBRDF brdf hit dir2viewer dir2light
 
         -- Next path segment calculations
-        bounce2GI g0 Environment            = (envEnergy, g0)              -- environment irradiance
-        bounce2GI g0 hit@(Hit _ _ _ entity) = (totalEnergy, gLast) where
-                (irradiance, gLast) = pathTrace' (levelsLeft-1) (Just entity) g''' scene ray'
+        bounce2GI gen' Environment            = (envEnergy, gen')              -- environment irradiance
+        bounce2GI gen' hit@(Hit _ _ _ entity) = (totalEnergy, gLast) where
+                (irradiance, gLast)          = pathTrace' (levelsLeft-1) (Just entity) g''' ray'
                 Mat brdf                     = enMaterial entity
-                (ray'@(Ray (_, dir')), g''') = generateRay g0 brdf hit -- from BRDF
+                (ray'@(Ray (_, dir')), g''') = generateRay gen' brdf hit -- from BRDF
                 brdfTransfer                 = evalBRDF brdf hit dir2viewer dir'
                 totalEnergy                  = lightEnergy + (irradiance `attenuateWith` brdfTransfer)
 
