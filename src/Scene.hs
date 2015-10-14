@@ -61,7 +61,7 @@ demoScene = Scene [sphere0, sphere1, sphere2, plane0] light0 settings where
         sphere2 = Entity (Sphere (P$V3 (-25) 20 180) 10)             (mkDiffuse 0 0.98 0.98)
         plane0  = Entity (Plane (normalize3(V3 0 0.5 (-0.5))) (150)) (mkDiffuse 0.5 0.5 0.5)
         light0  = OmniLight (P$V3 (-40) 80 0, Brightness 1)
-        settings = Settings { rsLightSamplesCount = 10, rsSecondaryGICount = 5, rsPathMaxDepth = 4 }
+        settings = Settings { rsLightSamplesCount = 1, rsSecondaryGICount = 20, rsPathMaxDepth = 3 }
 
 demoCamera = demoCamera1
 
