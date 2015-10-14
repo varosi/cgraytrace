@@ -3,15 +3,14 @@ import Math
 import Linear
 import Linear.Affine
 
-data Intersection g =   Environment |
-                        Hit {   isectDepth  :: Float,   -- depth to intersection from ray origin
+data Intersection g =   Hit {   isectDepth  :: Float,   -- depth to intersection from ray origin
                                 isectPoint  :: Coord3,  -- point of intersection
                                 isectNormal :: Normal,  -- normal at the point of intersection
                                 isectEntity :: g }      -- intersected geometry
                                 deriving Show
 
 class Intersectable geom where
-    intersect :: Ray -> geom -> Intersection geom
+    intersect :: Ray -> geom -> Maybe (Intersection geom)
 
 data Geometry = Sphere Coord3 Float |
                 Plane  Normal Float
@@ -19,7 +18,7 @@ data Geometry = Sphere Coord3 Float |
 
 instance Intersectable Geometry where
     intersect (Ray (rayOrigin, dir)) sphere@(Sphere center radius) =
-        if d >= 0 then Hit t ipoint inormal sphere else Environment where
+        if d >= 0 then Just( Hit t ipoint inormal sphere ) else Nothing where
             ndir        = normalized dir
             (P voffs)   = rayOrigin - center
             ac          = dot ndir ndir                     :: Float
@@ -34,7 +33,7 @@ instance Intersectable Geometry where
             inormal     = normalize3( ipoint .-. center )
 
     intersect (Ray (rayOrigin, dir)) plane@(Plane normal d) =
-        if t >= 0 then Hit t point' normal plane else Environment where
+        if t >= 0 then Just( Hit t point' normal plane ) else Nothing where
             (P p0)  = rayOrigin
             t       = (-(dot p0 (normalized normal) + d)) / dot (normalized dir) (normalized normal)
             point'  = rayOrigin .+^ (t *^ normalized dir)

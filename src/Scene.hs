@@ -23,11 +23,10 @@ data Scene = Scene {    scEntities  :: [Entity],
                         scSettings  :: RenderSettings }
 
 liftIntersection :: Entity -> Intersection Geometry -> Intersection Entity
-liftIntersection _ Environment = Environment
 liftIntersection (Entity _ mat) (Hit d p n g) = Hit d p n (Entity g mat)
 
 instance Intersectable Entity where
-    intersect ray entity@(Entity geom _) = liftIntersection entity . intersect ray $ geom
+    intersect ray entity@(Entity geom _) = fmap (liftIntersection entity) . intersect ray $ geom
 
 mkDiffuse :: Float -> Float -> Float -> Material
 mkDiffuse r g b = Mat$Diffuse (transfer r g b)
@@ -44,7 +43,7 @@ cornellScene = Scene [leftWall, rightWall, bottomWall, backWall, topWall, sphere
         light0     = OmniLight (P$V3 0 80 0, Brightness 5)
         light1     = RectLight (P$V3 0 85 0, V3 40 0 0, V3 0 0 40, Brightness 3)
 
-        settings = Settings { rsLightSamplesCount = 1, rsSecondaryGICount = 15, rsPathMaxDepth = 10 }
+        settings = Settings { rsLightSamplesCount = 10, rsSecondaryGICount = 5, rsPathMaxDepth = 4 }
 
 cornellCamera = PinholeCamera sensor camPos' camDir' camUp' camFocal  where
         sensor   = Sensor (360, 240, camSize)
