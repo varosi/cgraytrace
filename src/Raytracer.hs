@@ -60,15 +60,12 @@ pathTrace gen scene = pathTrace' maxDepth Nothing gen where
         isCameraRay    = maxDepth - levelsLeft == 0
         giSamplesCount = if isCameraRay then rsSecondaryGICount.scSettings $ scene else 1
 
-        -- shadow rays shoot first
-        (lightEnergy, g'') = shootMany bounce2light (rsLightSamplesCount.scSettings $ scene) g0 geomHit
-
-        -- gi rays shoot
-        result             = shootMany bounce2GI giSamplesCount g'' geomHit
+        (lightEnergy, g'') = shootMany bounce2light (rsLightSamplesCount.scSettings $ scene) g0  geomHit     -- shadow rays shoot first
+        result             = shootMany bounce2GI    giSamplesCount                           g'' geomHit     -- gi rays shoot
 
         bounce2light g hit@(Hit _ ipoint _ entity') = (reflectedLight, g') where
             Mat brdf            = enMaterial entity'
-            light               = scLight scene                        -- Single light support currently
+            light               = scLight scene
             (shadowRaySeg, g')  = shadowRay g light ipoint
 
             reflectedLight = case traceRay scene (Just entity') shadowRaySeg of
