@@ -44,7 +44,7 @@ cornellScene = Scene [leftWall, rightWall, bottomWall, backWall, topWall, sphere
         light0     = OmniLight (P$V3 0 80 0, Brightness 5)
         light1     = RectLight (P$V3 0 85 0, V3 40 0 0, V3 0 0 40, Brightness 3)
 
-        settings = Settings { rsLightSamplesCount = 10, rsSecondaryGICount = 15, rsPathMaxDepth = 4 }
+        settings = Settings { rsLightSamplesCount = 1, rsSecondaryGICount = 15, rsPathMaxDepth = 10 }
 
 cornellCamera = PinholeCamera sensor camPos' camDir' camUp' camFocal  where
         sensor   = Sensor (360, 240, camSize)

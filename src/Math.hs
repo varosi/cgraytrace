@@ -22,7 +22,6 @@ normalize3 = Normal . normalize
 normalized :: Normal -> Vec3
 normalized (Normal v) = v
 
-
 clamp :: forall a. Ord a => a -> a -> a -> a
 clamp min' max' x = min (max min' x) max'
 
@@ -45,6 +44,5 @@ toSpherical (V3 x y z) = SphereV r theta phi where
 -- theta The elevation angle in the range [-pi/2, pi/2].
 -- phi The azimuth angle in the range [0, 2*pi].
 fromSpherical :: SphericalVec -> V3 Float
-fromSpherical (SphereV r theta phi) = r *^ V3 (cos phi * thetaCos) (sin phi * thetaCos) thetaSin where
+fromSpherical (SphereV r theta phi) = r *^ V3 (cos phi * thetaCos) (sin phi * thetaCos) (sin theta) where
         thetaCos = cos theta
-        thetaSin = sin theta
