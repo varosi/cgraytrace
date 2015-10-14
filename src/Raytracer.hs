@@ -67,7 +67,7 @@ pathTrace gen scene = pathTrace' maxDepth Nothing gen where
 
         bounce2light g hit@(Hit _ ipoint _ entity') = (reflectedLight, g') where
             Mat brdf            = enMaterial entity'
-            light               = head . scLights $ scene                        -- Single light support currently
+            light               = scLight scene                        -- Single light support currently
             (shadowRay', g')    = shadowRay g light ipoint
             Ray (_, dir2light)  = shadowRay'
 

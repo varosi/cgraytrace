@@ -19,7 +19,7 @@ data RenderSettings = Settings {
                         rsPathMaxDepth      :: Int }
 
 data Scene = Scene {    scEntities  :: [Entity],
-                        scLights    :: [Light],
+                        scLight     :: Light,
                         scSettings  :: RenderSettings }
 
 liftIntersection :: Entity -> Intersection Geometry -> Intersection Entity
@@ -32,7 +32,7 @@ mkDiffuse :: Float -> Float -> Float -> Material
 mkDiffuse r g b = Mat$Diffuse (transfer r g b)
 
 cornellScene :: Scene
-cornellScene = Scene [leftWall, rightWall, bottomWall, backWall, topWall, sphere0] [light1] settings where
+cornellScene = Scene [leftWall, rightWall, bottomWall, backWall, topWall, sphere0] light1 settings where
         sphere0    = Entity (Sphere (P$V3 0 (-50) 0) 20)            (mkDiffuse 0.80 0.80 0)
         leftWall   = Entity (Plane (normalize3(V3 1 0 0)) (100))    (mkDiffuse 0.28 0 0)
         rightWall  = Entity (Plane (normalize3(V3 (-1) 0 0)) (100)) (mkDiffuse 0.0 0.0 0.28)
@@ -55,7 +55,7 @@ cornellCamera = PinholeCamera sensor camPos' camDir' camUp' camFocal  where
         camSize  = V2 3.6 2.4 -- 35mm
 
 demoScene :: Scene
-demoScene = Scene [sphere0, sphere1, sphere2, plane0] [light0] settings where
+demoScene = Scene [sphere0, sphere1, sphere2, plane0] light0 settings where
         sphere0 = Entity (Sphere (P$V3 0 0 200) 20)                  (mkDiffuse 0.98 0 0)
         sphere1 = Entity (Sphere (P$V3 5 35 200) 25)                 (mkDiffuse 0 0.98 0)
         sphere2 = Entity (Sphere (P$V3 (-25) 20 180) 10)             (mkDiffuse 0 0.98 0.98)
