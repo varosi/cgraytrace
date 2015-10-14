@@ -10,15 +10,15 @@ data Intersection g =   Hit {   isectDepth  :: Float,   -- depth to intersection
                                 deriving Show
 
 class Intersectable geom where
-    intersect :: Ray -> geom -> Maybe (Intersection geom)
+    intersect :: RaySegment -> geom -> Maybe (Intersection geom)
 
 data Geometry = Sphere Coord3 Float |
                 Plane  Normal Float
                     deriving (Eq, Show)
 
 instance Intersectable Geometry where
-    intersect (Ray (rayOrigin, dir)) sphere@(Sphere center radius) =
-        if d >= 0 then Just( Hit t ipoint inormal sphere ) else Nothing where
+    intersect (RaySeg (Ray (rayOrigin, dir), maxDepth)) sphere@(Sphere center radius) =
+        if d >= 0 && t <= maxDepth then Just( Hit t ipoint inormal sphere ) else Nothing where
             ndir        = normalized dir
             (P voffs)   = rayOrigin - center
             ac          = dot ndir ndir                     :: Float
@@ -32,8 +32,8 @@ instance Intersectable Geometry where
             ipoint      = rayOrigin .+^ (t *^ normalized dir)
             inormal     = normalize3( ipoint .-. center )
 
-    intersect (Ray (rayOrigin, dir)) plane@(Plane normal d) =
-        if t >= 0 then Just( Hit t point' normal plane ) else Nothing where
+    intersect (RaySeg (Ray (rayOrigin, dir), maxDepth)) plane@(Plane normal d) =
+        if t >= 0 && t <= maxDepth then Just( Hit t point' normal plane ) else Nothing where
             (P p0)  = rayOrigin
             t       = (-(dot p0 (normalized normal) + d)) / dot (normalized dir) (normalized normal)
             point'  = rayOrigin .+^ (t *^ normalized dir)

@@ -1,17 +1,23 @@
 {-# LANGUAGE RankNTypes #-}
-module Math(    Ray(..), Vec3, Coord3,
+module Math(    Ray(..), RaySegment (..),
+                Vec3, Coord3,
                 Normal, normalize3, normalized,
                 clamp, inRange,
-                SphericalVec(..), toSpherical, fromSpherical ) where
+                SphericalVec(..), toSpherical, fromSpherical,
+                farthestDistance ) where
 
 import Linear
 import Linear.Affine
 import System.Random (RandomGen(..))
 
+farthestDistance :: Float
+farthestDistance = 1e+10
+
 type Vec3   = V3 Float
 type Coord3 = Point V3 Float                     -- World coordinate system
 
-newtype Ray = Ray (Coord3, Normal) deriving Show -- position & direction
+newtype Ray = Ray (Coord3, Normal)       deriving Show -- position & direction
+newtype RaySegment = RaySeg (Ray, Float) deriving Show -- ray segment over Ray and between [0..Float]
 
 -- Track normalized type-safe vectors in world-coordinate system
 newtype Normal = Normal Vec3 deriving (Eq, Show)

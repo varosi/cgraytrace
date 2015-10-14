@@ -15,7 +15,7 @@ sensorAspect (Sensor (w,h,V2 sw sy)) =
 
 -- Interface for all cameras
 class Camera cam where
-    cameraRay    :: cam -> UnitSpace -> Ray
+    cameraRay    :: cam -> UnitSpace -> RaySegment
     cameraSensor :: cam -> Sensor
 
 data PinholeCamera = PinholeCamera {
@@ -32,7 +32,7 @@ data OrthoCamera = OrthoCamera {
             orthoUp          :: Normal }
 
 instance Camera OrthoCamera where
-      cameraRay cam (US imagePos) = Ray (start, orthoDir cam) where
+      cameraRay cam (US imagePos) = RaySeg (Ray (start, orthoDir cam), farthestDistance) where
           Sensor (_,_,sensorSize)  = orthoSensor cam
           aspect        = sensorAspect.orthoSensor $ cam
 
@@ -49,7 +49,7 @@ instance Camera OrthoCamera where
       cameraSensor = orthoSensor
 
 instance Camera PinholeCamera where
-    cameraRay cam (US imagePos) = Ray (phcamPos cam, normalize3 proj) where
+    cameraRay cam (US imagePos) = RaySeg (Ray (phcamPos cam, normalize3 proj), farthestDistance) where
         Sensor (_,_,sensorSize) = phcamSensor cam
         aspect   = sensorAspect.phcamSensor $ cam
 

@@ -24,9 +24,8 @@ attenuateWith :: Energy -> EnergyTransfer -> Energy
 attenuateWith (Energy(P e)) (EnergyTrans trans) = Energy( P( e * trans ))
 
 class Shadow gen light where
-    shadowRay :: RandomGen gen => gen -> light -> Coord3 -> (Ray, gen)
+    shadowRay :: RandomGen gen => gen -> light -> Coord3 -> (RaySegment, gen)
     eval      :: light -> Energy
-    lightPos  :: light -> Coord3
 
 newtype Brightness = Brightness Color deriving Show
 
@@ -35,21 +34,20 @@ data Light = OmniLight (Coord3, Brightness) |                   -- center, brigh
                 deriving Show
 
 instance Shadow gen Light where
-    shadowRay gen (OmniLight (pos, _)) point' = (Ray (point', dir), gen) where
-        dir = normalize3( pos .-. point' )
+    shadowRay gen (OmniLight (pos, _)) point' = (RaySeg (Ray (point', dir), dist), gen) where
+        vec2light = pos .-. point'
+        dir       = normalize3 vec2light
+        dist      = norm vec2light
 
-    shadowRay gen (RectLight (ptC, side0, side1, _)) point' = (Ray (point', dir), gen'') where
-        dir             = normalize3 (pt .-. point')
+    shadowRay gen (RectLight (ptC, side0, side1, _)) point' = (RaySeg (Ray (point', dir), dist), gen'') where
+        vec2light       = pt .-. point'
+        dir             = normalize3 vec2light
         pt              = ptC .+^ (vpt0 + vpt1)
+        dist            = norm vec2light
         (vpt0, vpt1)    = (side0 ^* sampleX, side1 ^* sampleY)
         (ran_x, gen')   = next gen
         (ran_y, gen'')  = next gen'
         (sampleX, sampleY) = (inRange gen ran_x - 0.5, inRange gen' ran_y - 0.5) :: (Float, Float)
 
-    eval (OmniLight (_, Brightness e)) = Energy e
-
+    eval (OmniLight (_, Brightness e))       = Energy e
     eval (RectLight (_, _, _, Brightness e)) = Energy e
-
-    lightPos (OmniLight (pos, _)) = pos
-
-    lightPos (RectLight (pos, _, _, _)) = pos

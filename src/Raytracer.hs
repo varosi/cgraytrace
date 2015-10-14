@@ -18,7 +18,7 @@ gamma       = 2.2
 invGamma    = 1/gamma
 
 -- rayCast (with depth) or pathTrace
-method :: RandomGen gen => gen -> Scene -> Ray -> (Energy, gen)
+method :: RandomGen gen => gen -> Scene -> RaySegment -> (Energy, gen)
 method = pathTrace
 
 mapEnergy :: Energy -> PixelRGB8
@@ -29,8 +29,8 @@ depthMap :: Maybe (Intersection a) -> Energy
 depthMap Nothing              = envEnergy
 depthMap (Just (Hit t _ _ _)) = Energy . P $ V3 a a a where a = t / 100
 
-traceRay :: Scene -> Maybe Entity -> Ray -> Maybe (Intersection Entity)
-traceRay scene toSkip ray = foldl closest Nothing . map (intersect ray) . skip toSkip . scEntities $ scene where
+traceRay :: Scene -> Maybe Entity -> RaySegment -> Maybe (Intersection Entity)
+traceRay scene toSkip raySeg = foldl closest Nothing . map (intersect raySeg) . skip toSkip . scEntities $ scene where
         closest x0 Nothing                                                 = x0
         closest Nothing x@(Just (Hit t _ _ _))                             = if t >= 0 then x else Nothing
         closest x0@(Just (Hit t0 _ _ entity0)) x@(Just (Hit t _ _ entity)) = if (entity /= entity0) && (t >= 0) && (t < t0) then x else x0
@@ -44,16 +44,16 @@ shootMany shooter cnt g0 (Just geomHit) = (avgEnergy, g'') where
     (lightSamples, g'') = foldl (\(xs, g) _ -> let (e, g') = shooter g geomHit in (e:xs, g')) ([], g0) [1..cnt]
     avgEnergy           = averageEnergy lightSamples
 
-rayCast :: Scene -> Ray -> Energy
+rayCast :: Scene -> RaySegment -> Energy
 rayCast scene = depthMap . traceRay scene Nothing
 
-pathTrace :: RandomGen gen => gen -> Scene -> Ray -> (Energy, gen)
+pathTrace :: RandomGen gen => gen -> Scene -> RaySegment -> (Energy, gen)
 pathTrace gen scene = pathTrace' maxDepth Nothing gen where
     maxDepth = rsPathMaxDepth.scSettings $ scene
 
     pathTrace' 0 _ g _                                       = (envEnergy, g)
-    pathTrace' levelsLeft prevHit g0 ray@(Ray (_, shootDir)) = result where
-        geomHit        = traceRay scene prevHit ray
+    pathTrace' levelsLeft prevHit g0 raySeg@(RaySeg (Ray (_, shootDir), maxt)) = result where
+        geomHit        = traceRay scene prevHit raySeg
         dir2viewer     = normalize3( normalized shootDir ^* (-1) )
 
         isCameraRay    = maxDepth - levelsLeft == 0
@@ -68,12 +68,12 @@ pathTrace gen scene = pathTrace' maxDepth Nothing gen where
         bounce2light g hit@(Hit _ ipoint _ entity') = (reflectedLight, g') where
             Mat brdf            = enMaterial entity'
             light               = scLight scene                        -- Single light support currently
-            (shadowRay', g')    = shadowRay g light ipoint
-            Ray (_, dir2light)  = shadowRay'
+            (shadowRaySeg, g')  = shadowRay g light ipoint
+            RaySeg (Ray (_, dir2light), _) = shadowRaySeg
 
-            reflectedLight = case traceRay scene (Just entity') shadowRay' of
-                Nothing            -> brdfReflEnergy                                                               -- shadow ray is traced to the light - 100% diffuse reflection
-                Just (Hit t _ _ _) -> if t < distance ipoint (lightPos light) then envEnergy else brdfReflEnergy   -- light is shadowed by some object
+            reflectedLight = case traceRay scene (Just entity') shadowRaySeg of
+                Nothing -> brdfReflEnergy    -- shadow ray is traced to the light - 100% diffuse reflection
+                Just _  -> envEnergy         -- light is shadowed by some object
 
             brdfReflEnergy = lightEnergy' `attenuateWith` brdfTransfer where
                     lightEnergy' = eval light
@@ -81,7 +81,7 @@ pathTrace gen scene = pathTrace' maxDepth Nothing gen where
 
         -- Next path segment calculations
         bounce2GI gen' hit@(Hit _ _ _ entity) = (totalEnergy, gLast) where
-            (irradiance, gLast)          = pathTrace' (levelsLeft-1) (Just entity) g''' ray'
+            (irradiance, gLast)          = pathTrace' (levelsLeft-1) (Just entity) g''' (RaySeg (ray', farthestDistance))
             Mat brdf                     = enMaterial entity
             (ray'@(Ray (_, dir')), g''') = generateRay gen' brdf hit -- from BRDF
             brdfTransfer                 = evalBRDF brdf hit dir2viewer dir'
