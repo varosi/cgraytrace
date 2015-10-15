@@ -33,7 +33,7 @@ mkDiffuse r g b = Mat$Diffuse (transfer r g b)
 
 cornellScene :: Scene
 cornellScene = Scene [leftWall, rightWall, bottomWall, backWall, topWall, sphere0] light1 settings where
-        sphere0    = Entity (Sphere (P$V3 0 (-50) 0) 20)          (mkDiffuse 0.80 0.80 0)
+        sphere0    = Entity (Sphere (P$V3 0 (-50) 0) 20)          (mkDiffuse 0.50 0.50 0)
         leftWall   = Entity (Plane (normalize3(V3 1 0 0))    100) (mkDiffuse 0.28 0 0)
         rightWall  = Entity (Plane (normalize3(V3 (-1) 0 0)) 100) (mkDiffuse 0.0 0.0 0.28)
         bottomWall = Entity (Plane (normalize3(V3 0 1 0))    100) (mkDiffuse 0.28 0.28 0.28)
@@ -41,9 +41,9 @@ cornellScene = Scene [leftWall, rightWall, bottomWall, backWall, topWall, sphere
         topWall    = Entity (Plane (normalize3(V3 0 (-1) 0)) 100) (mkDiffuse 0.18 0.18 0.18)
 
         -- light0     = OmniLight (P$V3 0 80 0, Brightness 5)
-        light1     = RectLight (P$V3 0 85 0, V3 40 0 0, V3 0 0 40, Brightness 3)
+        light1     = RectLight (P$V3 0 85 0, V3 40 0 0, V3 0 0 40, Brightness 1)
 
-        settings = Settings { rsLightSamplesCount = 10, rsSecondaryGICount = 5, rsPathMaxDepth = 4 }
+        settings = Settings { rsLightSamplesCount = 15, rsSecondaryGICount = 20, rsPathMaxDepth = 4 }
 
 cornellCamera :: PinholeCamera
 cornellCamera = PinholeCamera sensor camPos' camDir' camUp' camFocal  where

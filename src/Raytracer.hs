@@ -70,7 +70,7 @@ pathTrace gen scene = pathTrace' maxDepth Nothing gen where
 
             reflectedLight = case traceRay scene (Just entity') shadowRaySeg of
                 Nothing -> brdfReflEnergy    -- shadow ray is traced to the light - 100% diffuse reflection
-                Just _  -> envEnergy         -- light is shadowed by some object
+                Just _  -> zeroEnergy        -- light is shadowed by some object
 
             brdfReflEnergy = lightEnergy' `attenuateWith` brdfTransfer where
                     RaySeg (Ray (_, dir2light), _) = shadowRaySeg

@@ -12,6 +12,9 @@ type Color = Point V3 Float   -- absolute point in color space
 envEnergy :: Energy
 envEnergy = Energy( P( V3 0 0 0 ) )
 
+zeroEnergy :: Energy
+zeroEnergy = Energy( P( V3 0 0 0 ) )
+
 newtype Energy         = Energy Color           deriving (Num, Show, Eq)      -- R, G, B components of energy that we sense
 newtype EnergyTransfer = EnergyTrans (V3 Float) deriving (Num, Show, Eq)      -- delta energy - like vector in color space
 
