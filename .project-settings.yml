@@ -1,5 +1,7 @@
 binary-ghc-args:
+- -funfolding-use-threshold=16
 - -O2
+- -optc-O3
 - -threaded
 module-template: ! 'module MODULE_NAME where
 
