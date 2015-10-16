@@ -8,7 +8,7 @@ import Linear
 import System.Random (RandomGen(..))
 
 class BRDF brdf geom where
-    evalBRDF     :: brdf -> Intersection geom -> Normal -> Normal -> EnergyTransfer -- intersection info, dir to viewer, dir to irradiance
+    evalBRDF     :: brdf -> Intersection geom -> Normal -> Normal -> EnergyTransfer -- intersection info, dir to viewer, dir to light
     generateRay  :: RandomGen gen => gen -> brdf -> Intersection geom -> (Ray, gen) -- generate new ray reflected/refracted from the surface
 
 data BRDFs = Diffuse EnergyTransfer

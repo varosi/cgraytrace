@@ -26,7 +26,7 @@ getImageR = do
                 --gen <- liftIO newPureMT
                 -- gen <- liftIO newStdGen
                 let gen = seedTFGen (1,2,3,4)
-                let (_, image) = raytrace gen cornellScene cornellCamera
+                let image = raytrace gen cornellScene cornellCamera
                 sendResponse $ toTypedContent (typePng, toContent (encodePng image))
 
 main :: IO ()

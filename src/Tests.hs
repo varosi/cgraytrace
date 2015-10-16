@@ -11,7 +11,6 @@ import Linear
 import Linear.Affine
 import Light
 -- import Material
-import Debug.Trace
 --import Raytracer
 
 import System.Random.TF.Gen (seedTFGen)
@@ -61,13 +60,14 @@ prop_inrange a b c d = (value >= 0) && (value <= 1) where
         value  = inRange gen . fromIntegral $ v
         gen    = seedTFGen (a,b,c,d)
 
+prop_diffuseBRDF0 :: Word64 -> Word64 -> Word64 -> Word64 -> Float -> Float -> Bool
 prop_diffuseBRDF0 a b c d p t = dot normal (normalized outDir) >= (-1e-4) where
         gen    = seedTFGen (a,b,c,d)
         brdf   = Diffuse . EnergyTrans $ V3 1 1 1
         normal = fromSpherical( SphereV 1 p t )
         plane  = Plane (normalize3 normal) 0
         hit    = Hit 0 (P$V3 0 0 0) (normalize3 normal) plane
-        (ray@(Ray (_, outDir)), _) = generateRay gen brdf hit
+        ((Ray (_, outDir)), _) = generateRay gen brdf hit
 
 main :: IO ()
 main = hspec $ do

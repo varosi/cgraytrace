@@ -1,8 +1,10 @@
+{-# LANGUAGE BangPatterns #-}
 module Raytracer( raytrace, Geometry, Scene, Sensor(..), Camera(..), traceRay, pathTrace ) where
 
 import Camera
 import Geometry
-import Codec.Picture.Types (Image(..), PixelRGB8(..), generateFoldImage)
+import Codec.Picture.Types (Image(..), PixelRGB8(..), Pixel8)
+import Data.Vector.Storable (fromList, Vector)
 import Scene
 import Math
 import Light
@@ -11,8 +13,7 @@ import Linear.Affine
 import Material
 import BRDF
 import System.Random (RandomGen(..))
-import Control.Parallel
--- import Control.DeepSeq
+import Control.Parallel.Strategies
 
 gamma, invGamma :: Float
 gamma       = 2.2
@@ -89,9 +90,19 @@ imageSample :: RandomGen gen => gen -> Camera cam => Scene -> cam -> UnitSpace -
 imageSample g scene camera = method g scene . cameraRay camera
 
 -- Ray-trace whole image viewed by camera
-raytrace :: (RandomGen gen, Camera cam) => gen -> Scene -> cam -> (gen, Image PixelRGB8)
-raytrace gen scene camera = generateFoldImage pixelColor gen width height where
-    pixelColor g x y = (g', e `par` mapEnergy e) where
-            (e, _)   = imageSample g scene camera $ toScreenSpace sensor x y
-            (_, g')  = split g          -- make new generators
+raytrace :: (RandomGen gen, Camera cam) => gen -> Scene -> cam -> Image PixelRGB8
+raytrace gen scene camera = Image width height raw where
+    raw    = fromList( concatMap fromPixel pxList )
+    pxList = pixels gen `using` parBuffer 16 rseq   -- whole parallelism
+
+    pixels gen = map pixel $ zip (generators gen) (screenCoords sensor) where
+            pixel (g, (x,y)) = mapEnergy . fst $ imageSample g scene camera $ toScreenSpace sensor x y
+
+    fromPixel (PixelRGB8 !r !g !b)     = [r, g, b]
     sensor@(Sensor (width, height, _)) = cameraSensor camera
+
+screenCoords :: Sensor -> [(Int, Int)]
+screenCoords (Sensor (width, height, _)) = [(x,y) | y<-[0..height-1], x<-[0..width-1]]
+
+generators :: RandomGen gen => gen -> [gen]
+generators g = g':generators g' where (_, g')  = split g
