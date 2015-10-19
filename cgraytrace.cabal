@@ -27,6 +27,29 @@ executable cgraytrace
                        random,
                        tf-random,
                        mersenne-random-pure64,
-                       parallel
+                       parallel,
+                       vector
   hs-source-dirs:      src
   default-language:    Haskell2010
+  ghc-options:         -Wall -threaded -O2 -optc-O3 -funfolding-use-threshold=16 -with-rtsopts=-N
+--  ghc-prof-options:    -Wall -threaded -prof -fprof-auto -rtsopts -O2 -optc-O3 -funfolding-use-threshold=16 "-with-rtsopts=-N -p -s -h -i0.1"
+  ghc-prof-options:    -prof -fprof-auto -rtsopts -with-rtsopts=-N
+
+  
+executable cgraytrace_prof_thread
+  main-is:             Main.hs
+  -- other-modules:       
+  default-extensions:  BangPatterns, NoMonomorphismRestriction, QuasiQuotes, TemplateHaskell, TypeFamilies, FlexibleInstances, GeneralizedNewtypeDeriving, DeriveGeneric, RankNTypes, MultiParamTypeClasses, FlexibleContexts
+  build-depends:       base, 
+                       deepseq,
+                       yesod,
+                       JuicyPixels,
+                       linear,
+                       random,
+                       tf-random,
+                       mersenne-random-pure64,
+                       parallel,
+                       vector
+  hs-source-dirs:      src
+  default-language:    Haskell2010
+  --ghc-options:         -Wall -threaded -eventlog -rtsopts -O2 -optc-O3 -funfolding-use-threshold=16 "-with-rtsopts=-N -ls"
