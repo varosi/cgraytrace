@@ -2,38 +2,40 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 module Light where
 
+import qualified Prelude as P
+import Numeric.Units.Dimensional.Prelude
+import Numeric.Units.Dimensional
 import Math
 import Linear
 import Linear.Affine
 import System.Random (RandomGen(..))
 
-type Color = Point V3 Float   -- absolute point in color space
+type Color a      = Point V3 a   -- absolute point in color space
+type ColorTrans a = V3 a         -- delta energy - like vector in color space
 
-envEnergy :: Energy
-envEnergy = Energy( P( V3 0 0 0 ) )
+envLightIntensity :: LightIntensity
+envLightIntensity = P( V3 _0 _0 _0 )
 
-zeroEnergy :: Energy
-zeroEnergy = Energy( P( V3 0 0 0 ) )
+zeroLightIntensity :: LightIntensity
+zeroLightIntensity = P( V3 _0 _0 _0 )
 
-newtype Energy         = Energy Color           deriving (Num, Show, Eq)      -- R, G, B components of energy that we sense
-newtype EnergyTransfer = EnergyTrans (V3 Float) deriving (Num, Show, Eq)      -- delta energy - like vector in color space
+type LightIntensity = Color (LuminousIntensity Float)               -- R, G, B components of directional energy
+type Albedo         = ColorTrans (Dimensionless Float)              -- R, G, B coefficients of light transmissance
 
-averageEnergy :: [Energy] -> Energy
-averageEnergy xs = Energy . P $ sum' ^* (1/count) where
-    (sum', count) = foldl (\(acc,cnt) e -> (acc + e, cnt+1)) (V3 0 0 0, 0) . map energyColor $ xs
-    energyColor (Energy (P c)) = c
+attenuateWith :: LightIntensity -> Albedo -> LightIntensity
+attenuateWith (P(V3 er eg eb)) (V3 tr tg tb) = coord (er * tr) (eg * tg) (eb * tb)
 
-attenuateWith :: Energy -> EnergyTransfer -> Energy
-attenuateWith (Energy(P e)) (EnergyTrans trans) = Energy( P( e * trans ))
+-- averageLightIntensity :: [LightIntensity] -> LightIntensity
+-- averageLightIntensity xs = P( sum' ^* (1/count) ) where
+--    (sum', count) = foldl (\(acc,cnt) e -> (acc + e, cnt+1)) (V3 0 0 0, 0) . map energyColor $ xs
+--    energyColor (P c) = c
 
 class Shadow gen light where
     shadowRay :: RandomGen gen => gen -> light -> Coord3 -> (RaySegment, gen)
-    eval      :: light -> Energy
+    eval      :: light -> LightIntensity
 
-newtype Brightness = Brightness Color deriving Show
-
-data Light = OmniLight (Coord3, Brightness) |                   -- center, brightness
-             RectLight (Coord3, Vec3, Vec3, Brightness)         -- center, side0, side1, brightness
+data Light = OmniLight (Coord3,             LuminousFlux Float) |   -- center, integral luminous flux [lumens]
+             RectLight (Coord3, Vec3, Vec3, LuminousFlux Float)     -- center, side0, side1, integral luminous flux [lumens]
                 deriving Show
 
 instance Shadow gen Light where
@@ -45,12 +47,12 @@ instance Shadow gen Light where
     shadowRay gen (RectLight (ptC, side0, side1, _)) point' = (RaySeg (Ray (point', dir), dist), gen'') where
         vec2light       = pt .-. point'
         dir             = normalize3 vec2light
-        pt              = ptC .+^ (vpt0 + vpt1)
+        pt              = ptC .+^ (vpt0 P.+ vpt1)
         dist            = norm vec2light
-        (vpt0, vpt1)    = (side0 ^* sampleX, side1 ^* sampleY)
+        (vpt0, vpt1)    = (side0 ^* sampleX, side1 ^* sampleY) :: (V3 Float, V3 Float)
         (ran_x, gen')   = next gen
         (ran_y, gen'')  = next gen'
-        (sampleX, sampleY) = (inRange gen ran_x - 0.5, inRange gen' ran_y - 0.5) :: (Float, Float)
+        (sampleX, sampleY) = (inRange gen ran_x P.- 0.5, inRange gen' ran_y P.- 0.5) :: (Float, Float)
 
-    eval (OmniLight (_, Brightness e))       = Energy e
-    eval (RectLight (_, _, _, Brightness e)) = Energy e
+    eval (OmniLight (_, e))       = coord e e e -- TODO /4*pi ?
+    eval (RectLight (_, _, _, e)) = coord e e e -- TODO

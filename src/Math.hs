@@ -1,6 +1,6 @@
 {-# LANGUAGE RankNTypes #-}
 module Math(    Ray(..), RaySegment (..),
-                Vec3, Coord3,
+                Vec3, Coord3, coord,
                 Normal, normalize3, normalized,
                 clamp, inRange,
                 SphericalVec(..), toSpherical, fromSpherical,
@@ -15,6 +15,9 @@ farthestDistance = 1e+10
 
 type Vec3   = V3 Float
 type Coord3 = Point V3 Float                     -- World coordinate system
+
+coord :: a -> a -> a -> Point V3 a
+coord x y z = P(V3 x y z)
 
 newtype Ray = Ray (Coord3, Normal)       deriving Show -- position & direction
 newtype RaySegment = RaySeg (Ray, Float) deriving Show -- ray segment over Ray and between [0..Float]
