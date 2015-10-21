@@ -10,7 +10,7 @@ import System.Random (RandomGen(..))
 import Control.Applicative
 
 type Color a        = V3 a
-type LightIntensity = Color (LuminousIntensity Float)          -- R, G, B components of directional energy
+type LightIntensity = Color (LuminousIntensity Float)          -- R, G, B components of directional luminous intensity [candela]
 type Albedo         = Color (Dimensionless Float)              -- R, G, B coefficients of light transmissance
 
 envLightIntensity :: LightIntensity
@@ -31,8 +31,8 @@ class Shadow gen light where
     shadowRay :: RandomGen gen => gen -> light -> Coord3 -> (RaySegment, gen)
     eval      :: light -> Normal -> LightIntensity                  -- dir2light
 
-data Light = OmniLight (Coord3,             LuminousFlux Float) |   -- center, integral luminous flux [lumens]
-             RectLight (Coord3, Vec3, Vec3, LuminousFlux Float)     -- center, side0, side1, integral luminous flux [lumens]
+data Light = OmniLight (Coord3,             LuminousFlux Float) |   -- center, luminous flux [lumens]
+             RectLight (Coord3, Vec3, Vec3, LuminousFlux Float)     -- center, side0, side1, luminous flux [lumens]
                 deriving Show
 
 instance Shadow gen Light where
@@ -51,5 +51,5 @@ instance Shadow gen Light where
         (ran_y, gen'')  = next gen'
         (sampleX, sampleY) = (inRange gen ran_x P.- 0.5, inRange gen' ran_y P.- 0.5) :: (Float, Float)
 
-    eval (OmniLight (_, e)) _       = V3 e e e -- TODO /4*pi ?
+    eval (OmniLight (_, e)) _       = V3 (e*pi4) (e*pi4) (e*pi4) where pi4 = _1 / (_4*pi)
     eval (RectLight (_, _, _, e)) _ = V3 e e e -- TODO
