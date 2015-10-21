@@ -1,9 +1,8 @@
 {-# LANGUAGE RankNTypes #-}
 module Math(    Ray(..), RaySegment (..),
-                Vec3, Coord3,
+                Vec3, Coord3, coord,
                 Normal, normalize3, normalized,
                 clamp, inRange,
-                SphericalVec(..), toSpherical, fromSpherical,
                 farthestDistance ) where
 
 import Linear
@@ -15,6 +14,9 @@ farthestDistance = 1e+10
 
 type Vec3   = V3 Float
 type Coord3 = Point V3 Float                     -- World coordinate system
+
+coord :: a -> a -> a -> Point V3 a
+coord x y z = P(V3 x y z)
 
 newtype Ray = Ray (Coord3, Normal)       deriving Show -- position & direction
 newtype RaySegment = RaySeg (Ray, Float) deriving Show -- ray segment over Ray and between [0..Float]
@@ -35,20 +37,3 @@ clamp min' max' x = min (max min' x) max'
 inRange :: RandomGen g => g -> Int -> Float
 inRange gen i = fromIntegral (i - min') / fromIntegral (max' - min') where
     (min', max') = genRange gen
-
--- theta The elevation angle in the range [-pi/2, pi/2]
--- phi The azimuth angle in the range [0, 2*pi]
-data SphericalVec = SphereV !Float !Float !Float -- length, theta, phi
-
-toSpherical :: V3 Float -> SphericalVec
-toSpherical (V3 x y z) = SphereV r theta phi where
-        r     = sqrt (x*x + y*y + z*z)
-        theta = asin (z/r)
-        phi'  = atan2 y x
-        phi   = if phi' < 0 then phi' + (2*pi) else phi'
-
--- theta The elevation angle in the range [-pi/2, pi/2].
--- phi The azimuth angle in the range [0, 2*pi].
-fromSpherical :: SphericalVec -> V3 Float
-fromSpherical (SphereV r theta phi) = r *^ V3 (cos phi * thetaCos) (sin phi * thetaCos) (sin theta) where
-        thetaCos = cos theta

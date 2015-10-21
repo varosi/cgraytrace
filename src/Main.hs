@@ -11,7 +11,7 @@ import Yesod
 import Codec.Picture.Png
 import Raytracer
 import Scene
-import System.Random.TF.Gen (seedTFGen, RandomGen(..))
+import System.Random.TF.Gen (seedTFGen)
 
 -- Little server to show us rendering result
 data App = App

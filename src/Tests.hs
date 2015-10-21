@@ -3,6 +3,8 @@ import Test.QuickCheck
 import Test.Hspec
 import Math
 
+import Numeric.Units.Dimensional.Prelude (lumen, one, (*~))
+import Numeric.Units.Dimensional (Dimensional(..))
 import GHC.Word
 import Scene
 import BRDF
@@ -11,7 +13,7 @@ import Linear
 import Linear.Affine
 import Light
 -- import Material
---import Raytracer
+-- import Raytracer
 
 import System.Random.TF.Gen (seedTFGen)
 import System.Random (RandomGen(..))
@@ -26,8 +28,8 @@ prop_clamp3 = clamp (0 :: Float) 1 10    == 1
 
 prop_polar0, prop_polar1, prop_polar2, prop_polar3 :: Float -> Float -> Float -> Bool
 prop_polar0 x y z = r >= 0                        || (x == 0 && y == 0 && z == 0)   where SphereV r _ _ = toSpherical $ V3 x y z
-prop_polar1 x y z = (t >= -(pi/2) && t <= (pi/2)) || (x == 0 && y == 0 && z == 0)   where SphereV _ t _ = toSpherical $ V3 x y z
-prop_polar2 x y z = (p >= 0 && p <= (2*pi))       || (x == 0 && y == 0 && z == 0)   where SphereV _ _ p = toSpherical $ V3 x y z
+prop_polar1 x y z = (t >= -(pi/2) && t <= (pi/2)) || (x == 0 && y == 0 && z == 0)   where SphereV _ (Dimensional t) _ = toSpherical $ V3 x y z
+prop_polar2 x y z = (p >= 0 && p <= (2*pi))       || (x == 0 && y == 0 && z == 0)   where SphereV _ _ (Dimensional p) = toSpherical $ V3 x y z
 prop_polar3 x y z = (distance v1 v2 <= 1e-5)      || (dot v1 v1 <= 1e-5)  where
         v1 = normalize $ V3 x y z
         v2 = normalize $ fromSpherical . toSpherical $ v1
@@ -37,7 +39,7 @@ testScene = Scene [sphere0, sphere1, plane0] light0 settings where
         sphere0 = Entity (Sphere (P$V3 0 0 200) 20) (mkDiffuse 0.98 0 0)
         sphere1 = Entity (Sphere (P$V3 5 35 200) 25) (mkDiffuse 0 0.98 0)
         plane0  = Entity (Plane (normalize3(V3 0 1 (-0.5))) 100) (mkDiffuse 0.5 0.5 0.5)
-        light0  = OmniLight (P$V3 0 0 0, Brightness 1)
+        light0  = OmniLight (P$V3 0 0 0, 100 *~lumen)
         settings = Settings { rsLightSamplesCount = 1, rsSecondaryGICount = 1, rsPathMaxDepth = 1 }
 
 --testIt :: String
@@ -63,11 +65,11 @@ prop_inrange a b c d = (value >= 0) && (value <= 1) where
 prop_diffuseBRDF0 :: Word64 -> Word64 -> Word64 -> Word64 -> Float -> Float -> Bool
 prop_diffuseBRDF0 a b c d p t = dot normal (normalized outDir) >= (-1e-4) where
         gen    = seedTFGen (a,b,c,d)
-        brdf   = Diffuse . EnergyTrans $ V3 1 1 1
-        normal = fromSpherical( SphereV 1 p t )
+        brdf   = Diffuse (transfer 1 1 1)
+        normal = fromSpherical( SphereV 1 (p *~one) (t *~one) )
         plane  = Plane (normalize3 normal) 0
         hit    = Hit 0 (P$V3 0 0 0) (normalize3 normal) plane
-        ((Ray (_, outDir)), _) = generateRay gen brdf hit
+        (Ray (_, outDir), _) = generateRay gen brdf hit
 
 main :: IO ()
 main = hspec $ do

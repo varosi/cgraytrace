@@ -1,5 +1,6 @@
 module Scene where
 
+import Numeric.Units.Dimensional.Prelude( (*~), lumen )
 import Linear
 import Linear.Affine
 import Geometry
@@ -40,14 +41,13 @@ cornellScene = Scene [leftWall, rightWall, bottomWall, backWall, topWall, sphere
         backWall   = Entity (Plane (normalize3(V3 0 0 (-1))) 100) (mkDiffuse 0.18 0.18 0.18)
         topWall    = Entity (Plane (normalize3(V3 0 (-1) 0)) 100) (mkDiffuse 0.18 0.18 0.18)
 
-        -- light0     = OmniLight (P$V3 0 80 0, Brightness 5)
-        light1     = RectLight (P$V3 0 85 0, V3 40 0 0, V3 0 0 40, Brightness 1)
+        light1     = RectLight (P$V3 0 85 0, V3 40 0 0, V3 0 0 40, 450*~lumen)  -- 40W incacestent bulb
 
-        settings = Settings { rsLightSamplesCount = 10, rsSecondaryGICount = 30, rsPathMaxDepth = 4 }
+        settings   = Settings { rsLightSamplesCount = 10, rsSecondaryGICount = 30, rsPathMaxDepth = 4 }
 
 cornellCamera :: PinholeCamera
 cornellCamera = PinholeCamera sensor camPos' camDir' camUp' camFocal  where
-        sensor   = Sensor (360, 240, camSize)
+        sensor   = Sensor (360, 240, camSize, 3E-3)
         -- sensor   = Sensor (1280, 1024, camSize)
         camPos' = P $ V3 0 0 (-80)
         camDir' = normalize3( V3 0 0 1 )
@@ -61,7 +61,7 @@ demoScene = Scene [sphere0, sphere1, sphere2, plane0] light0 settings where
         sphere1 = Entity (Sphere (P$V3 5 35 200) 25)                 (mkDiffuse 0 0.98 0)
         sphere2 = Entity (Sphere (P$V3 (-25) 20 180) 10)             (mkDiffuse 0 0.98 0.98)
         plane0  = Entity (Plane (normalize3(V3 0 0.5 (-0.5))) 150)   (mkDiffuse 0.5 0.5 0.5)
-        light0  = OmniLight (P$V3 (-40) 80 0, Brightness 1)
+        light0  = OmniLight (P$V3 (-40) 80 0, 100 *~lumen)
         settings = Settings { rsLightSamplesCount = 1, rsSecondaryGICount = 20, rsPathMaxDepth = 3 }
 
 demoCamera :: PinholeCamera
@@ -76,11 +76,11 @@ camUp  = normalize3( V3 0 (-1) 0 )
 
 demoCamera0 :: OrthoCamera
 demoCamera0   = OrthoCamera sensor camPos camDir camUp where
-        sensor   = Sensor (160, 160, camSize)
+        sensor   = Sensor (160, 160, camSize, 0.01)
         camSize  = V2 100 100
 
 demoCamera1 :: PinholeCamera
 demoCamera1 = PinholeCamera sensor camPos camDir camUp camFocal  where
-        sensor   = Sensor (360, 240, camSize)
+        sensor   = Sensor (360, 240, camSize, 0.01)
         camFocal = 4.0        -- 40mm
         camSize  = V2 3.6 2.4 -- 35mm
