@@ -29,7 +29,7 @@ averageIntensity xs = (*invLength) <$> foldl1 (\a b -> (+)<$>a<*>b ) xs where
 
 class Shadow gen light where
     shadowRay :: RandomGen gen => gen -> light -> Coord3 -> (RaySegment, gen)
-    eval      :: light -> LightIntensity
+    eval      :: light -> Normal -> LightIntensity                  -- dir2light
 
 data Light = OmniLight (Coord3,             LuminousFlux Float) |   -- center, integral luminous flux [lumens]
              RectLight (Coord3, Vec3, Vec3, LuminousFlux Float)     -- center, side0, side1, integral luminous flux [lumens]
@@ -51,5 +51,5 @@ instance Shadow gen Light where
         (ran_y, gen'')  = next gen'
         (sampleX, sampleY) = (inRange gen ran_x P.- 0.5, inRange gen' ran_y P.- 0.5) :: (Float, Float)
 
-    eval (OmniLight (_, e))       = V3 e e e -- TODO /4*pi ?
-    eval (RectLight (_, _, _, e)) = V3 e e e -- TODO
+    eval (OmniLight (_, e)) _       = V3 e e e -- TODO /4*pi ?
+    eval (RectLight (_, _, _, e)) _ = V3 e e e -- TODO

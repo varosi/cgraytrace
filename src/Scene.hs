@@ -43,11 +43,11 @@ cornellScene = Scene [leftWall, rightWall, bottomWall, backWall, topWall, sphere
 
         light1     = RectLight (P$V3 0 85 0, V3 40 0 0, V3 0 0 40, 450*~lumen)  -- 40W incacestent bulb
 
-        settings   = Settings { rsLightSamplesCount = 10, rsSecondaryGICount = 30, rsPathMaxDepth = 4 }
+        settings   = Settings { rsLightSamplesCount = 5, rsSecondaryGICount = 5, rsPathMaxDepth = 4 }
 
 cornellCamera :: PinholeCamera
 cornellCamera = PinholeCamera sensor camPos' camDir' camUp' camFocal  where
-        sensor   = Sensor (360, 240, camSize, 3E-3)
+        sensor   = Sensor (360, 240, camSize, 3e-3)
         -- sensor   = Sensor (1280, 1024, camSize)
         camPos' = P $ V3 0 0 (-80)
         camDir' = normalize3( V3 0 0 1 )
