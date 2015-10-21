@@ -6,10 +6,10 @@ import Linear.Affine
 
 newtype UnitSpace = US (V2 Float)
 
-newtype Sensor = Sensor (Int, Int, V2 Float)    -- width, height, physical size
+newtype Sensor = Sensor (Int, Int, V2 Float, Float)    -- width, height, physical size, exposure
 
 sensorAspect :: Sensor -> Float
-sensorAspect (Sensor (w,h,V2 sw sy)) =
+sensorAspect (Sensor (w,h,V2 sw sy,_)) =
     fromIntegral w / fromIntegral h / sizeAspect where
         sizeAspect = sw/sy
 
@@ -33,7 +33,7 @@ data OrthoCamera = OrthoCamera {
 
 instance Camera OrthoCamera where
       cameraRay cam (US imagePos) = RaySeg (Ray (start, orthoDir cam), farthestDistance) where
-          Sensor (_,_,sensorSize)  = orthoSensor cam
+          Sensor (_,_,sensorSize,_)  = orthoSensor cam
           aspect        = sensorAspect.orthoSensor $ cam
 
           (V2 x y)      = (imagePos - V2 0.5 0.5) * sensorSize
@@ -50,7 +50,7 @@ instance Camera OrthoCamera where
 
 instance Camera PinholeCamera where
     cameraRay cam (US imagePos) = RaySeg (Ray (phcamPos cam, normalize3 proj), farthestDistance) where
-        Sensor (_,_,sensorSize) = phcamSensor cam
+        Sensor (_,_,sensorSize,_) = phcamSensor cam
         aspect   = sensorAspect.phcamSensor $ cam
 
         (V2 x y) = (imagePos - V2 0.5 0.5) * sensorSize
@@ -69,6 +69,6 @@ instance Camera PinholeCamera where
     cameraSensor = phcamSensor
 
 toScreenSpace :: Sensor -> Int -> Int -> UnitSpace
-toScreenSpace (Sensor (width, height, _)) x y = US $ V2 sx sy where
+toScreenSpace (Sensor (width, height, _, _)) x y = US $ V2 sx sy where
         sx = fromIntegral x / (fromIntegral width  - 1)
         sy = fromIntegral y / (fromIntegral height - 1)
