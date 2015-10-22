@@ -1,9 +1,7 @@
-{-# LANGUAGE FlexibleInstances #-}
 module Light where
 
 import qualified Prelude as P
 import Numeric.Units.Dimensional.Prelude hiding ((-))
-import Numeric.Units.Dimensional
 import Math
 import Linear
 import Linear.Affine
@@ -55,4 +53,4 @@ instance Shadow gen Light where
     eval (OmniLight (_, e)) _               = V3 (e*pi4) (e*pi4) (e*pi4) where pi4 = _1 / (_4*pi)
     eval (RectLight (_, side0, side1, e)) _ = V3 (e*k) (e*k) (e*k) where
         k       = _1 / (_4*pi*surface)                   -- double sided
-        surface = ((norm side0) P.* (norm side1)) *~ one -- TODO [m^2]
+        surface = (norm side0 P.* norm side1) *~ one -- TODO [m^2]

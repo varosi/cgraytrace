@@ -1,4 +1,3 @@
-{-# LANGUAGE RankNTypes #-}
 module Math(    Ray(..), RaySegment (..),
                 Vec3, Coord3, coord,
                 UnitV3, normalize3, normalized, mkTangent,
@@ -42,9 +41,11 @@ mkTangent :: UnitV3 -> UnitV3
 mkTangent (UnitV3 (V3 x y z)) = normalize3( result c ) where
     (x', y', z') = (abs x, abs y, abs z)
 
-    c = if x' <= y' then if x' <= z' then 0 else 2
-        else if z' < y' then 2 else 1
+    c :: Int
+    c | x' <= y'  = if x' <= z' then 0 else 2
+      | z' < y'   = 2
+      | otherwise = 1
 
     result 0 = V3 0    z (-y)
     result 1 = V3 z    0 (-x)
-    result 2 = V3 y (-x)    0
+    result _ = V3 y (-x)    0

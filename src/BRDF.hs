@@ -1,4 +1,3 @@
-{-# LANGUAGE FlexibleInstances #-}
 module BRDF where
 
 import qualified Prelude as P

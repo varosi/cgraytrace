@@ -1,4 +1,3 @@
-{-# LANGUAGE BangPatterns #-}
 module Raytracer( raytrace, Geometry, Scene, Sensor(..), Camera(..), traceRay, pathTrace ) where
 
 import Prelude ((-), (/), (**), (*))
