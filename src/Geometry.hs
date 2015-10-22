@@ -3,10 +3,12 @@ import Math
 import Linear
 import Linear.Affine
 
-data Intersection g =   Hit {   isectDepth  :: Float,   -- depth to intersection from ray origin
-                                isectPoint  :: Coord3,  -- point of intersection
-                                isectNormal :: UnitV3,  -- normal at the point of intersection
-                                isectEntity :: g }      -- intersected geometry
+data Intersection g =   Hit {   isectDepth     :: Float,   -- depth to intersection from ray origin
+                                isectPoint     :: Coord3,  -- point of intersection
+                                isectNormal    :: UnitV3,  -- normal at the point of intersection
+                                isectTangent   :: UnitV3,  -- tangent over the surface at the point of intersection
+                                isectBiTangent :: UnitV3,  -- bi-tangent over the surface at the point of intersection
+                                isectEntity    :: g }      -- intersected geometry
                                 deriving Show
 
 class Intersectable geom where
@@ -18,7 +20,7 @@ data Geometry = Sphere Coord3 Float |
 
 instance Intersectable Geometry where
     intersect (RaySeg (Ray (rayOrigin, dir), maxDepth)) sphere@(Sphere center radius) =
-        if d >= 0 && t <= maxDepth then Just( Hit t ipoint inormal sphere ) else Nothing where
+        if d >= 0 && t <= maxDepth then Just( Hit t ipoint inormal itangent ibitangent sphere ) else Nothing where
             ndir        = normalized dir
             (P voffs)   = rayOrigin - center
             ac          = dot ndir ndir                     :: Float
@@ -31,9 +33,13 @@ instance Intersectable Geometry where
             t           = min s0 s1
             ipoint      = rayOrigin .+^ (t *^ normalized dir)
             inormal     = normalize3( ipoint .-. center )
+            itangent    = mkTangent inormal
+            ibitangent  = normalize3( cross (normalized inormal) (normalized itangent) )
 
     intersect (RaySeg (Ray (rayOrigin, dir), maxDepth)) plane@(Plane normal d) =
-        if t >= 0 && t <= maxDepth then Just( Hit t point' normal plane ) else Nothing where
-            (P p0)  = rayOrigin
-            t       = (-(dot p0 (normalized normal) + d)) / dot (normalized dir) (normalized normal)
-            point'  = rayOrigin .+^ (t *^ normalized dir)
+        if t >= 0 && t <= maxDepth then Just( Hit t point' normal itangent ibitangent plane ) else Nothing where
+            (P p0)   = rayOrigin
+            t        = (-(dot p0 (normalized normal) + d)) / dot (normalized dir) (normalized normal)
+            point'   = rayOrigin .+^ (t *^ normalized dir)
+            itangent    = mkTangent normal
+            ibitangent  = normalize3( cross (normalized normal) (normalized itangent) )

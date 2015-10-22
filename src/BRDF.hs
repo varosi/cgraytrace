@@ -39,17 +39,19 @@ transfer :: Float -> Float -> Float -> LightTrans
 transfer r g b = V3 (r *~one) (g *~one) (b *~one)
 
 instance BRDF BRDFs a where
-    evalBRDF (Diffuse reflectivity) (Hit _ _ inormal _) _ dir2light =
+    evalBRDF (Diffuse reflectivity) (Hit _ _ inormal _ _ _) _ dir2light =
         (cs' *) <$> reflectivity where
             csL = dot (normalized inormal) (normalized dir2light) *~ one
             cs' = _2 * clamp _0 _1 csL
 
-    generateRay gen (Diffuse _) (Hit _ ipoint inormal _) = (Ray (ipoint, normalize3 dir), gen'') where
+    generateRay gen (Diffuse _) (Hit _ ipoint inormal itangent ibitangent _) = (Ray (ipoint, normalize3 dir), gen'') where
         (ran_theta, gen') = next gen
         (ran_phi, gen'')  = next gen'
-        inRange' g x = Dimensional $ inRange g x                        :: PlaneAngle Float
+        inRange' g x = Dimensional $ inRange g x                :: PlaneAngle Float
 
-        SphereV _ theta phi = toSpherical . normalized $ inormal
-        theta' = inRange' gen ran_theta * (pi / _2) - (pi / _4) + theta :: PlaneAngle Float
-        phi'   = inRange' gen' ran_phi * pi - (pi / _2) + phi           :: PlaneAngle Float
-        dir    = fromSpherical( SphereV 1 theta' phi' )
+        theta = inRange' gen ran_theta * (pi/_2)                :: PlaneAngle Float
+        phi   = inRange' gen' ran_phi * (_2*pi)                 :: PlaneAngle Float
+        localDir = fromSpherical( SphereV 1 theta phi )
+
+        surfaceT = V3 (normalized itangent) (normalized ibitangent) (normalized inormal) :: M33 Float
+        dir = localDir *! surfaceT

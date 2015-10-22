@@ -24,8 +24,8 @@ invGamma    = 1 / gamma
 traceRay :: Scene -> Maybe Entity -> RaySegment -> Maybe (Intersection Entity)
 traceRay scene toSkip raySeg = foldl closest Nothing . map (intersect raySeg) . skip toSkip . scEntities $ scene where
         closest x0 Nothing                                                 = x0
-        closest Nothing x@(Just (Hit t _ _ _))                             = if t >= 0 then x else Nothing
-        closest x0@(Just (Hit t0 _ _ entity0)) x@(Just (Hit t _ _ entity)) = if (entity /= entity0) && (t >= 0) && (t < t0) then x else x0
+        closest Nothing x@(Just (Hit t _ _ _ _ _))                         = if t >= 0 then x else Nothing
+        closest x0@(Just (Hit t0 _ _ _ _ entity0)) x@(Just (Hit t _ _ _ _ entity)) = if (entity /= entity0) && (t >= 0) && (t < t0) then x else x0
 
         skip Nothing xs  = xs
         skip (Just e) xs = filter (/= e) xs
@@ -51,7 +51,7 @@ pathTrace gen scene = pathTrace' maxDepth Nothing gen where
         (lightIntensity, g'') = shootMany bounce2light (rsLightSamplesCount.scSettings $ scene) g0  geomHit     -- shadow rays shoot first
         (giIntensity, g''')   = shootMany bounce2GI    giSamplesCount                           g'' geomHit     -- gi rays shoot
 
-        bounce2light g hit@(Hit _ ipoint _ entity) = (reflectedLight, g') where
+        bounce2light g hit@(Hit _ ipoint _ _ _ entity) = (reflectedLight, g') where
             light               = scLight scene
             (shadowRaySeg, g')  = shadowRay g light ipoint
             RaySeg (Ray (_, dir2light), _) = shadowRaySeg
@@ -63,14 +63,14 @@ pathTrace gen scene = pathTrace' maxDepth Nothing gen where
             irradiance  = eval light dir2light
             radiance    = evalHitBRDF hit irradiance dir2light
 
-        bounce2GI g hit@(Hit _ _ _ entity) = (exRadiance, gLast) where
+        bounce2GI g hit@(Hit { isectEntity = entity }) = (exRadiance, gLast) where
             (inRadiance, gLast)             = pathTrace' (levelsLeft-1) (Just entity) g' (RaySeg (nextRay, farthestDistance))
             Mat brdf                        = enMaterial entity
             (nextRay@(Ray (_, inDir)), g')  = generateRay g brdf hit                -- from BRDF
             exRadiance                      = evalHitBRDF hit inRadiance inDir
 
-        evalHitBRDF hit@(Hit _ _ _ entity) irradiance irrDir = radiance where
-            Mat brdf        = enMaterial entity
+        evalHitBRDF hit irradiance irrDir = radiance where
+            Mat brdf        = enMaterial . isectEntity $ hit
             brdfTransfer    = evalBRDF brdf hit dir2viewer irrDir
             radiance        = irradiance `attenuateWith` brdfTransfer
 

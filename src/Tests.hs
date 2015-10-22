@@ -68,7 +68,9 @@ prop_diffuseBRDF0 a b c d p t = dot normal (normalized outDir) >= (-1e-4) where
         brdf   = Diffuse (transfer 1 1 1)
         normal = fromSpherical( SphereV 1 (p *~one) (t *~one) )
         plane  = Plane (normalize3 normal) 0
-        hit    = Hit 0 (P$V3 0 0 0) (normalize3 normal) plane
+        itangent    = mkTangent (normalize3 normal)
+        ibitangent  = normalize3( cross normal (normalized itangent) )
+        hit    = Hit 0 (P$V3 0 0 0) (normalize3 normal) itangent ibitangent plane
         (Ray (_, outDir), _) = generateRay gen brdf hit
 
 main :: IO ()

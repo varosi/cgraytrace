@@ -24,7 +24,7 @@ data Scene = Scene {    scEntities  :: [Entity],
                         scSettings  :: RenderSettings }
 
 liftIntersection :: Entity -> Intersection Geometry -> Intersection Entity
-liftIntersection (Entity _ mat) (Hit d p n g) = Hit d p n (Entity g mat)
+liftIntersection (Entity _ mat) (Hit d p n t bt g) = Hit d p n t bt (Entity g mat)
 
 instance Intersectable Entity where
     intersect ray entity@(Entity geom _) = fmap (liftIntersection entity) . intersect ray $ geom
@@ -35,7 +35,7 @@ mkDiffuse r g b = Mat$Diffuse (transfer r g b)
 cornellScene :: Scene
 cornellScene = Scene [leftWall, rightWall, bottomWall, backWall, topWall, sphere0] light1 settings where
         sphere0    = Entity (Sphere (P$V3 0 (-50) 0) 20)          (mkDiffuse 0.50 0.50 0.50)
-        leftWall   = Entity (Plane (normalize3(V3 1 0 0))    100) (mkDiffuse 0.28 0 0)
+        leftWall   = Entity (Plane (normalize3(V3 1 0 0))    100) (mkDiffuse 1.58 0 0)
         rightWall  = Entity (Plane (normalize3(V3 (-1) 0 0)) 100) (mkDiffuse 0.0 0.0 0.28)
         bottomWall = Entity (Plane (normalize3(V3 0 1 0))    100) (mkDiffuse 0.18 0.18 0)
         backWall   = Entity (Plane (normalize3(V3 0 0 (-1))) 100) (mkDiffuse 0.18 0.18 0.18)
