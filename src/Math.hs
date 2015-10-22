@@ -1,7 +1,7 @@
 {-# LANGUAGE RankNTypes #-}
 module Math(    Ray(..), RaySegment (..),
                 Vec3, Coord3, coord,
-                Normal, normalize3, normalized,
+                UnitV3, normalize3, normalized,
                 clamp, inRange,
                 farthestDistance ) where
 
@@ -18,17 +18,17 @@ type Coord3 = Point V3 Float                     -- World coordinate system
 coord :: a -> a -> a -> Point V3 a
 coord x y z = P(V3 x y z)
 
-newtype Ray = Ray (Coord3, Normal)       deriving Show -- position & direction
+newtype Ray = Ray (Coord3, UnitV3)       deriving Show -- position & direction
 newtype RaySegment = RaySeg (Ray, Float) deriving Show -- ray segment over Ray and between [0..Float]
 
 -- Track normalized type-safe vectors in world-coordinate system
-newtype Normal = Normal Vec3 deriving (Eq, Show)
+newtype UnitV3 = UnitV3 Vec3 deriving (Eq, Show)
 
-normalize3 :: Vec3 -> Normal
-normalize3 = Normal . normalize
+normalize3 :: Vec3 -> UnitV3
+normalize3 = UnitV3 . normalize
 
-normalized :: Normal -> Vec3
-normalized (Normal v) = v
+normalized :: UnitV3 -> Vec3
+normalized (UnitV3 v) = v
 
 clamp :: forall a. Ord a => a -> a -> a -> a
 clamp min' max' x = min (max min' x) max'

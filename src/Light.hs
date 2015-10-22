@@ -3,6 +3,7 @@ module Light where
 
 import qualified Prelude as P
 import Numeric.Units.Dimensional.Prelude hiding ((-))
+import Numeric.Units.Dimensional
 import Math
 import Linear
 import Linear.Affine
@@ -11,7 +12,7 @@ import Control.Applicative
 
 type Color a        = V3 a
 type LightIntensity = Color (LuminousIntensity Float)          -- R, G, B components of directional luminous intensity [candela]
-type Albedo         = Color (Dimensionless Float)              -- R, G, B coefficients of light transmissance
+type LightTrans     = Color (Dimensionless Float)              -- R, G, B coefficients of light transmitance [1/steradian]
 
 envLightIntensity :: LightIntensity
 envLightIntensity = zeroLightIntensity
@@ -19,7 +20,7 @@ envLightIntensity = zeroLightIntensity
 zeroLightIntensity :: LightIntensity
 zeroLightIntensity = V3 _0 _0 _0
 
-attenuateWith :: LightIntensity -> Albedo -> LightIntensity
+attenuateWith :: LightIntensity -> LightTrans -> LightIntensity
 attenuateWith i a = (*) <$> i <*> a
 
 averageIntensity :: [LightIntensity] -> LightIntensity
@@ -29,7 +30,7 @@ averageIntensity xs = (*invLength) <$> foldl1 (\a b -> (+)<$>a<*>b ) xs where
 
 class Shadow gen light where
     shadowRay :: RandomGen gen => gen -> light -> Coord3 -> (RaySegment, gen)
-    eval      :: light -> Normal -> LightIntensity                  -- dir2light
+    eval      :: light -> UnitV3 -> LightIntensity                  -- dir2light
 
 data Light = OmniLight (Coord3,             LuminousFlux Float) |   -- center, luminous flux [lumens]
              RectLight (Coord3, Vec3, Vec3, LuminousFlux Float)     -- center, side0, side1, luminous flux [lumens]

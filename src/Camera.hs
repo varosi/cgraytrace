@@ -21,15 +21,15 @@ class Camera cam where
 data PinholeCamera = PinholeCamera {
             phcamSensor      :: Sensor,
             phcamPos         :: Coord3,
-            phcamDir         :: Normal,
-            phcamUp          :: Normal,
+            phcamDir         :: UnitV3,
+            phcamUp          :: UnitV3,
             phcamFocalLength :: Float }
 
 data OrthoCamera = OrthoCamera {
             orthoSensor      :: Sensor,
             orthoPos         :: Coord3,
-            orthoDir         :: Normal,
-            orthoUp          :: Normal }
+            orthoDir         :: UnitV3,
+            orthoUp          :: UnitV3 }
 
 instance Camera OrthoCamera where
       cameraRay cam (US imagePos) = RaySeg (Ray (start, orthoDir cam), farthestDistance) where

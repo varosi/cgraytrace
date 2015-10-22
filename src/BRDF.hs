@@ -29,13 +29,13 @@ fromSpherical (SphereV r theta phi) = r *^ V3 (cos phi * thetaCos /~ one) (sin p
         thetaCos = cos theta
 
 class BRDF brdf geom where
-    evalBRDF     :: brdf -> Intersection geom -> Normal -> Normal -> Albedo -- intersection info, dir to viewer, dir to light
-    generateRay  :: RandomGen gen => gen -> brdf -> Intersection geom -> (Ray, gen) -- generate new ray reflected/refracted from the surface
+    evalBRDF     :: brdf -> Intersection geom -> UnitV3 -> UnitV3 -> LightTrans -- intersection info, dir to viewer, dir to light
+    generateRay  :: RandomGen gen => gen -> brdf -> Intersection geom -> (Ray, gen) -- generate new ray reflected from the surface
 
-data BRDFs = Diffuse Albedo
+data BRDFs = Diffuse LightTrans
                 deriving (Eq, Show)
 
-transfer :: Float -> Float -> Float -> Albedo
+transfer :: Float -> Float -> Float -> LightTrans
 transfer r g b = V3 (r *~one) (g *~one) (b *~one)
 
 instance BRDF BRDFs a where

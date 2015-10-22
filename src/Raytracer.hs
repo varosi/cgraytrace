@@ -63,11 +63,11 @@ pathTrace gen scene = pathTrace' maxDepth Nothing gen where
             irradiance  = eval light dir2light
             radiance    = evalHitBRDF hit irradiance dir2light
 
-        bounce2GI g hit@(Hit _ _ _ entity) = (radiance, gLast) where
-            (irradiance, gLast)             = pathTrace' (levelsLeft-1) (Just entity) g' (RaySeg (nextRay, farthestDistance))
+        bounce2GI g hit@(Hit _ _ _ entity) = (exRadiance, gLast) where
+            (inRadiance, gLast)             = pathTrace' (levelsLeft-1) (Just entity) g' (RaySeg (nextRay, farthestDistance))
             Mat brdf                        = enMaterial entity
-            (nextRay@(Ray (_, irrDir)), g') = generateRay g brdf hit                -- from BRDF
-            radiance                        = evalHitBRDF hit irradiance irrDir
+            (nextRay@(Ray (_, inDir)), g')  = generateRay g brdf hit                -- from BRDF
+            exRadiance                      = evalHitBRDF hit inRadiance inDir
 
         evalHitBRDF hit@(Hit _ _ _ entity) irradiance irrDir = radiance where
             Mat brdf        = enMaterial entity

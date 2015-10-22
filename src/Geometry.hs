@@ -5,7 +5,7 @@ import Linear.Affine
 
 data Intersection g =   Hit {   isectDepth  :: Float,   -- depth to intersection from ray origin
                                 isectPoint  :: Coord3,  -- point of intersection
-                                isectNormal :: Normal,  -- normal at the point of intersection
+                                isectNormal :: UnitV3,  -- normal at the point of intersection
                                 isectEntity :: g }      -- intersected geometry
                                 deriving Show
 
@@ -13,7 +13,7 @@ class Intersectable geom where
     intersect :: RaySegment -> geom -> Maybe (Intersection geom)
 
 data Geometry = Sphere Coord3 Float |
-                Plane  Normal Float
+                Plane  UnitV3 Float
                     deriving (Eq, Show)
 
 instance Intersectable Geometry where

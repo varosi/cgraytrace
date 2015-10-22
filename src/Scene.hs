@@ -70,7 +70,7 @@ demoCamera = demoCamera1
 camPos :: Coord3
 camPos = P $ V3 0 0 0
 
-camDir, camUp :: Normal
+camDir, camUp :: UnitV3
 camDir = normalize3( V3 0 0 1 )
 camUp  = normalize3( V3 0 (-1) 0 )
 
