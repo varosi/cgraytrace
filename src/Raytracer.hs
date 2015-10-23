@@ -20,6 +20,7 @@ gamma, invGamma :: Float
 gamma       = 2.2
 invGamma    = 1 / gamma
 
+-- |Trace single ray segment against a scene and return closest intersection if there is
 traceRay :: Scene -> Maybe Entity -> RaySegment -> Maybe (Intersection Entity)
 traceRay scene toSkip raySeg = foldl closest Nothing . map (intersect raySeg) . skip toSkip . scEntities $ scene where
         closest x0 Nothing                                                 = x0
@@ -30,9 +31,9 @@ traceRay scene toSkip raySeg = foldl closest Nothing . map (intersect raySeg) . 
         skip (Just e) xs = filter (/= e) xs
 
 -- |Shoot many rays using "shooter" function
-shootMany :: (Num a, Enum a) => (t1 -> t -> (LightIntensity, t1)) -> a -> t1 -> Maybe t -> (LightIntensity, t1)
-shootMany _ _ g0 Nothing                = (envLightIntensity, g0)
-shootMany shooter cnt g0 (Just geomHit) = (avgLightIntensity, g'') where
+shootMany :: (Num a, Enum a) => (t1 -> t -> (LightIntensity, t1)) -> a -> t1 -> LightIntensity -> Maybe t -> (LightIntensity, t1)
+shootMany _ _ g0 envLightIntensity Nothing  = (envLightIntensity, g0)
+shootMany shooter cnt g0 _ (Just geomHit)   = (avgLightIntensity, g'') where
     (samples, g'') = foldl (\(xs, g) _ -> let (e, g') = shooter g geomHit in (e:xs, g')) ([], g0) [1..cnt]
     avgLightIntensity = averageIntensity samples
 
@@ -41,7 +42,7 @@ pathTrace :: RandomGen gen => gen -> Scene -> RaySegment -> (LightIntensity, gen
 pathTrace gen scene = pathTrace' maxDepth Nothing gen where
     maxDepth = rsPathMaxDepth.scSettings $ scene
 
-    pathTrace' 0 _ g _                                                      = (envLightIntensity, g)
+    pathTrace' 0 _ g _                                                      = (scEnvLight scene, g)
     pathTrace' levelsLeft prevHit g0 raySeg@(RaySeg (Ray (_, shootDir), _)) = ((+) <$> lightIntensity <*> giIntensity, g''') where
         geomHit        = traceRay scene prevHit raySeg
         dir2viewer     = normalize3( normalized shootDir ^* (-1) )
@@ -49,8 +50,8 @@ pathTrace gen scene = pathTrace' maxDepth Nothing gen where
         isCameraRay    = maxDepth - levelsLeft == 0
         giSamplesCount = if isCameraRay then rsSecondaryGICount.scSettings $ scene else 1
 
-        (lightIntensity, g'') = shootMany bounce2light (rsLightSamplesCount.scSettings $ scene) g0  geomHit     -- shadow rays shoot first
-        (giIntensity, g''')   = shootMany bounce2GI    giSamplesCount                           g'' geomHit     -- gi rays shoot
+        (lightIntensity, g'') = shootMany bounce2light (rsLightSamplesCount.scSettings $ scene) g0  (scEnvLight scene) geomHit     -- shadow rays shoot first
+        (giIntensity, g''')   = shootMany bounce2GI    giSamplesCount                           g'' (scEnvLight scene) geomHit     -- gi rays shoot
 
         bounce2light g hit@(Hit _ ipoint _ _ _ entity) = (reflectedLight, g') where
             light               = scLight scene

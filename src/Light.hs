@@ -52,9 +52,6 @@ instance Shadow gen Light where
 -----------------------------------------------------------------------------------------------------------------------
 -- Utilities
 
-envLightIntensity :: LightIntensity
-envLightIntensity = zeroLightIntensity
-
 zeroLightIntensity :: LightIntensity
 zeroLightIntensity = V3 _0 _0 _0
 
