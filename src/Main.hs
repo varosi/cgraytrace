@@ -13,6 +13,7 @@ instance Yesod App
 
 mkYesod "App" [parseRoutes| / ImageR GET |]
 
+-- |HTTP GET at "host/" address that return us ray traced image
 getImageR :: MonadHandler m => m TypedContent
 getImageR = do
                 let gen   = seedTFGen (1,2,3,4)
