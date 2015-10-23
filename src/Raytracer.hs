@@ -16,6 +16,7 @@ import System.Random (RandomGen(..))
 import Control.Parallel.Strategies
 import Control.Applicative
 
+-- | gamma used for intensity mapping
 gamma, invGamma :: Float
 gamma       = 2.2
 invGamma    = 1 / gamma
@@ -92,7 +93,7 @@ raytrace :: (RandomGen gen, Camera cam) => gen -> Scene -> cam -> Image PixelRGB
 raytrace gen scene camera = Image width height raw where
     raw    = fromList( concatMap fromPixel pxList )
 
-    -- |Introduce parallelism at this line
+    -- |Introduce parallelism at this line. Trace 16 rays per lightweight thread.
     pxList = pixels gen `using` parBuffer 16 rseq
 
     -- |Map light intensity to pixel color
