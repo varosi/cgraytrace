@@ -29,12 +29,14 @@ traceRay scene toSkip raySeg = foldl closest Nothing . map (intersect raySeg) . 
         skip Nothing xs  = xs
         skip (Just e) xs = filter (/= e) xs
 
+-- |Shoot many rays using "shooter" function
 shootMany :: (Num a, Enum a) => (t1 -> t -> (LightIntensity, t1)) -> a -> t1 -> Maybe t -> (LightIntensity, t1)
 shootMany _ _ g0 Nothing                = (envLightIntensity, g0)
 shootMany shooter cnt g0 (Just geomHit) = (avgLightIntensity, g'') where
     (samples, g'') = foldl (\(xs, g) _ -> let (e, g') = shooter g geomHit in (e:xs, g')) ([], g0) [1..cnt]
     avgLightIntensity = averageIntensity samples
 
+-- |Trace single path of rays
 pathTrace :: RandomGen gen => gen -> Scene -> RaySegment -> (LightIntensity, gen)
 pathTrace gen scene = pathTrace' maxDepth Nothing gen where
     maxDepth = rsPathMaxDepth.scSettings $ scene
@@ -73,10 +75,11 @@ pathTrace gen scene = pathTrace' maxDepth Nothing gen where
             brdfTransfer    = evalBRDF brdf hit dir2viewer irrDir
             radiance        = irradiance `attenuateWith` brdfTransfer
 
+-- |Trace single path of rays from camera space parameters (image sampler)
 imageSample :: RandomGen gen => gen -> Camera cam => Scene -> cam -> UnitSpace -> (LightIntensity, gen)
 imageSample g scene camera = pathTrace g scene . cameraRay camera
 
--- Ray-trace whole image viewed by camera
+-- |Ray-trace whole image viewed by camera in parallel
 raytrace :: (RandomGen gen, Camera cam) => gen -> Scene -> cam -> Image PixelRGB8
 raytrace gen scene camera = Image width height raw where
     raw    = fromList( concatMap fromPixel pxList )
@@ -92,8 +95,10 @@ raytrace gen scene camera = Image width height raw where
     fromPixel (PixelRGB8 !r !g !b)               = [r, g, b]
     sensor@(Sensor (width, height, _, exposure)) = cameraSensor camera
 
+-- |Screen coordinates [(0,0), (1,0), (2,0), ...]
 screenCoords :: Sensor -> [(Int, Int)]
 screenCoords (Sensor (width, height, _, _)) = [(x,y) | y<-[0..height-1], x<-[0..width-1]]
 
+-- |Infinite list of random generators starting from one
 generators :: RandomGen gen => gen -> [gen]
 generators g = g':generators g' where (_, g')  = split g

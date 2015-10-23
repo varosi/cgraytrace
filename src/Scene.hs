@@ -10,6 +10,7 @@ import Material
 import BRDF
 import Math
 
+-- Scene description
 data Entity = Entity {  enGeom      :: Geometry,
                         enMaterial  :: Material }
                         deriving (Eq, Show)
@@ -23,15 +24,8 @@ data Scene = Scene {    scEntities  :: [Entity],
                         scLight     :: Light,
                         scSettings  :: RenderSettings }
 
-liftIntersection :: Entity -> Intersection Geometry -> Intersection Entity
-liftIntersection (Entity _ mat) (Hit d p n t bt g) = Hit d p n t bt (Entity g mat)
-
-instance Intersectable Entity where
-    intersect ray entity@(Entity geom _) = fmap (liftIntersection entity) . intersect ray $ geom
-
-mkDiffuse :: Float -> Float -> Float -> Material
-mkDiffuse r g b = Mat$Diffuse (transfer r g b)
-
+-----------------------------------------------------------------------------------------------------------------------
+-- Demo scenes
 cornellScene :: Scene
 cornellScene = Scene [leftWall, rightWall, bottomWall, backWall, topWall, sphere0] light1 settings where
         sphere0    = Entity (Sphere (P$V3 0 (-50) 0) 20)          (mkDiffuse 0.50 0.50 0.50)
@@ -84,3 +78,13 @@ demoCamera1 = PinholeCamera sensor camPos camDir camUp camFocal  where
         sensor   = Sensor (360, 240, camSize, 0.01)
         camFocal = 4.0        -- 40mm
         camSize  = V2 3.6 2.4 -- 35mm
+
+-----------------------------------------------------------------------------------------------------------------------
+liftIntersection :: Entity -> Intersection Geometry -> Intersection Entity
+liftIntersection (Entity _ mat) (Hit d p n t bt g) = Hit d p n t bt (Entity g mat)
+
+instance Intersectable Entity where
+    intersect ray entity@(Entity geom _) = fmap (liftIntersection entity) . intersect ray $ geom
+
+mkDiffuse :: Float -> Float -> Float -> Material
+mkDiffuse r g b = Mat$Diffuse (transfer r g b)

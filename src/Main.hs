@@ -1,10 +1,4 @@
-{-# LANGUAGE NoMonomorphismRestriction #-}
-{-# LANGUAGE QuasiQuotes               #-}
-{-# LANGUAGE TemplateHaskell           #-}
-{-# LANGUAGE TypeFamilies              #-}
-{-# LANGUAGE RankNTypes                #-}
-{-# LANGUAGE OverloadedStrings         #-}
-
+{-# LANGUAGE NoMonomorphismRestriction, QuasiQuotes, TemplateHaskell, TypeFamilies, OverloadedStrings #-}
 module Main where
 
 import Yesod
@@ -13,7 +7,7 @@ import Raytracer
 import Scene
 import System.Random.TF.Gen (seedTFGen)
 
--- Little server to show us rendering result
+-- Little RESTful HTTP web server to show us rendering result
 data App = App
 instance Yesod App
 
@@ -21,8 +15,9 @@ mkYesod "App" [parseRoutes| / ImageR GET |]
 
 getImageR :: MonadHandler m => m TypedContent
 getImageR = do
-                let gen = seedTFGen (1,2,3,4)
+                let gen   = seedTFGen (1,2,3,4)
                 let image = raytrace gen cornellScene cornellCamera
+
                 sendResponse $ toTypedContent (typePng, toContent (encodePng image))
 
 main :: IO ()

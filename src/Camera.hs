@@ -8,16 +8,12 @@ newtype UnitSpace = US (V2 Float)
 
 newtype Sensor = Sensor (Int, Int, V2 Float, Float)    -- width, height, physical size, exposure
 
-sensorAspect :: Sensor -> Float
-sensorAspect (Sensor (w,h,V2 sw sy,_)) =
-    fromIntegral w / fromIntegral h / sizeAspect where
-        sizeAspect = sw/sy
-
--- Interface for all cameras
+-- |Interface for all cameras with two needed functions
 class Camera cam where
     cameraRay    :: cam -> UnitSpace -> RaySegment
     cameraSensor :: cam -> Sensor
 
+-- |Our cameras
 data PinholeCamera = PinholeCamera {
             phcamSensor      :: Sensor,
             phcamPos         :: Coord3,
@@ -31,6 +27,7 @@ data OrthoCamera = OrthoCamera {
             orthoDir         :: UnitV3,
             orthoUp          :: UnitV3 }
 
+-- |Implementation of Ortho camera
 instance Camera OrthoCamera where
       cameraRay cam (US imagePos) = RaySeg (Ray (start, orthoDir cam), farthestDistance) where
           Sensor (_,_,sensorSize,_)  = orthoSensor cam
@@ -48,6 +45,7 @@ instance Camera OrthoCamera where
 
       cameraSensor = orthoSensor
 
+-- |Implementation of Pinhole camera
 instance Camera PinholeCamera where
     cameraRay cam (US imagePos) = RaySeg (Ray (phcamPos cam, normalize3 proj), farthestDistance) where
         Sensor (_,_,sensorSize,_) = phcamSensor cam
@@ -67,6 +65,13 @@ instance Camera PinholeCamera where
         view     = V3 xaxis yaxis zaxis
 
     cameraSensor = phcamSensor
+
+
+-----------------------------------------------------------------------------------------------------------------------
+sensorAspect :: Sensor -> Float
+sensorAspect (Sensor (w,h,V2 sw sy,_)) =
+    fromIntegral w / fromIntegral h / sizeAspect where
+        sizeAspect = sw/sy
 
 toScreenSpace :: Sensor -> Int -> Int -> UnitSpace
 toScreenSpace (Sensor (width, height, _, _)) x y = US $ V2 sx sy where
