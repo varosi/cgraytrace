@@ -52,11 +52,12 @@ pathTrace gen scene = pathTrace' maxDepth Nothing gen where
         dir2viewer     = normalize3( normalized shootDir ^* (-1) )
 
         isCameraRay    = maxDepth - levelsLeft == 0
-        giSamplesCount = if isCameraRay then rsSecondaryGICount.scSettings $ scene else 1
+        giSamplesCount    = if isCameraRay then rsSecondaryGICount.scSettings $ scene else 1
+        lightSamplesCount = if isCameraRay then rsLightSamplesCount.scSettings $ scene else 1
 
         -- Trace shadow rays and GI rays
-        (lightIntensity, g'') = shootMany bounce2light (rsLightSamplesCount.scSettings $ scene) g0  (scEnvLight scene) geomHit     -- shadow rays shoot first
-        (giIntensity, g''')   = shootMany bounce2GI    giSamplesCount                           g'' (scEnvLight scene) geomHit     -- gi rays shoot
+        (lightIntensity, g'') = shootMany bounce2light lightSamplesCount g0  (scEnvLight scene) geomHit     -- shadow rays shoot first
+        (giIntensity, g''')   = shootMany bounce2GI    giSamplesCount    g'' (scEnvLight scene) geomHit     -- gi rays shoot
 
         -- |Shadow rays tracing
         bounce2light g hit@(Hit _ ipoint _ _ _ entity) = (reflectedLight, g') where
