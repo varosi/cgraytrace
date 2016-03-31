@@ -20,10 +20,10 @@ data RenderSettings = Settings {
                         rsSecondaryGICount  :: Int,
                         rsPathMaxDepth      :: Int }
 
-data Scene = Scene {    scEntities          :: [Entity],
-                        scLight             :: Light,
+data Scene = Scene {    scEntities  :: [Entity],
+                        scLight     :: Light,
                         scEnvLight          :: LightIntensity,
-                        scSettings          :: RenderSettings }
+                        scSettings  :: RenderSettings }
 
 -----------------------------------------------------------------------------------------------------------------------
 -- Demo scenes
@@ -40,9 +40,9 @@ cornellScene = Scene [leftWall, rightWall, bottomWall, backWall, topWall, sphere
 
         settings   = Settings { rsLightSamplesCount = 5, rsSecondaryGICount = 25, rsPathMaxDepth = 3 }
 
-cornellCamera :: PinholeCamera
-cornellCamera = PinholeCamera sensor camPos' camDir' camUp' camFocal  where
-        sensor   = Sensor (640, 480, camSize, 3e+1)
+cornellCamera :: Int -> Int -> PinholeCamera
+cornellCamera width height = PinholeCamera sensor camPos' camDir' camUp' camFocal  where
+        sensor   = Sensor (width, height, camSize, 3e+1)
         --sensor   = Sensor (1280, 1024, camSize, 3e+1)
         camPos' = P $ V3 0 0 (-80)
         camDir' = normalize3( V3 0 0 1 )
