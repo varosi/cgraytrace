@@ -14,7 +14,6 @@ import Material
 import BRDF
 import System.Random (RandomGen(..))
 import Control.Parallel.Strategies
-import Control.Applicative
 
 -- | gamma used for intensity mapping
 gamma, invGamma :: Float
@@ -60,6 +59,7 @@ pathTrace gen scene = pathTrace' maxDepth Nothing gen where
         (giIntensity, g''')   = shootMany bounce2GI    giSamplesCount    g'' (scEnvLight scene) geomHit     -- gi rays shoot
 
         -- |Shadow rays tracing
+        -- bounce2light :: RandomGen gen => gen -> Intersection Entity -> (LightIntensity, gen)
         bounce2light g hit@(Hit _ ipoint _ _ _ entity) = (reflectedLight, g') where
             light               = scLight scene
             (shadowRaySeg, g')  = shadowRay g light ipoint
@@ -69,11 +69,11 @@ pathTrace gen scene = pathTrace' maxDepth Nothing gen where
                 Nothing -> radiance             -- shadow ray is traced to the light
                 Just _  -> zeroLightIntensity   -- light is shadowed by some object
 
-            irradiance  = eval light dir2light
+            irradiance  = eval g light dir2light
             radiance    = evalHitBRDF hit irradiance dir2light
 
         -- |GI tracing
-        bounce2GI g hit@(Hit { isectEntity = entity }) = (exRadiance, gLast) where
+        bounce2GI g hit@Hit { isectEntity = entity } = (exRadiance, gLast) where
             (inRadiance, gLast)             = pathTrace' (levelsLeft-1) (Just entity) g' (RaySeg (nextRay, farthestDistance))   -- recursive path tracing
             Mat brdf                        = enMaterial entity
             (nextRay@(Ray (_, inDir)), g')  = generateRay g brdf hit                -- from BRDF
