@@ -2,13 +2,11 @@ module BRDF where
 
 import Prelude ()
 import Numeric.Units.Dimensional.Prelude
-import Numeric.Units.Dimensional
 import Geometry
 import Light
 import Math
 import Linear
 import System.Random (RandomGen(..))
-import Control.Applicative
 
 -- |all BRDFs have this two functions
 class BRDF brdf geom where
@@ -31,7 +29,7 @@ instance BRDF BRDFs a where
 
             (ran_theta, gen') = next gen
             (ran_phi, gen'')  = next gen'
-            inRange' g x = Dimensional $ inRange g x                :: PlaneAngle Float
+            inRange' g x = inRange g x *~ one                       :: PlaneAngle Float
 
             theta = inRange' gen ran_theta * (pi/_2)                :: PlaneAngle Float
             phi   = inRange' gen' ran_phi * (_2*pi)                 :: PlaneAngle Float

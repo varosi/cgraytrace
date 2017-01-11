@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleContexts, AllowAmbiguousTypes #-}
 module Light where
 
 import qualified Prelude as P
@@ -6,7 +7,6 @@ import Math
 import Linear
 import Linear.Affine
 import System.Random (RandomGen(..))
-import Control.Applicative
 
 -- |Light description
 type Color a        = V3 a
@@ -14,8 +14,8 @@ type LightIntensity = Color (LuminousIntensity Float)          -- R, G, B compon
 type LightTrans     = Color (Dimensionless Float)              -- R, G, B coefficients of light transmitance [1/steradian]
 
 -- |Light & shadow interface
-class Shadow gen light where
-    shadowRay :: RandomGen gen => gen -> light -> Coord3 -> (RaySegment, gen)
+class RandomGen gen => Shadow gen light where
+    shadowRay :: gen -> light -> Coord3 -> (RaySegment, gen)
     eval      :: light -> UnitV3 -> LightIntensity                  -- dir2light
 
 -- |Supported light types
@@ -24,7 +24,7 @@ data Light = OmniLight (Coord3,             LuminousFlux Float) |   -- center, l
                 deriving Show
 
 -- |Implementation of lights
-instance Shadow gen Light where
+instance RandomGen gen => Shadow gen Light where
     shadowRay gen (OmniLight (pos, _)) point' =
         (RaySeg (Ray (point', dir), dist), gen) where
             vec2light = pos .-. point'

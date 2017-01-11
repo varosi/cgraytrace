@@ -8,7 +8,6 @@ module Math(    Ray(..), RaySegment (..),
 import Prelude ((-), abs)
 import qualified Prelude as P
 import Numeric.Units.Dimensional.Prelude hiding (abs, (-))
-import Numeric.Units.Dimensional (Dimensional(..))
 import Linear
 import Linear.Affine
 import System.Random (RandomGen(..))
@@ -65,8 +64,8 @@ data SphericalVec = SphereV !Float !(PlaneAngle Float) !(PlaneAngle Float) -- le
 toSpherical :: V3 Float -> SphericalVec
 toSpherical v@(V3 x y z) = SphereV r theta phi where
         r     = norm v
-        theta = asin (Dimensional$ z P./ r)
-        phi'  = atan2 (Dimensional y) (Dimensional x)
+        theta = asin ((z P./ r) *~ one)
+        phi'  = atan2 (y *~ one) (x *~ one)
         phi   = if phi' < _0 then phi' + (_2*pi) else phi'
 
 -- |theta The elevation angle in the range [-pi/2, pi/2].
