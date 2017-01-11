@@ -69,7 +69,7 @@ pathTrace gen scene = pathTrace' maxDepth Nothing gen where
                 Nothing -> radiance             -- shadow ray is traced to the light
                 Just _  -> zeroLightIntensity   -- light is shadowed by some object
 
-            irradiance  = eval g light dir2light
+            irradiance  = eval light dir2light
             radiance    = evalHitBRDF hit irradiance dir2light
 
         -- |GI tracing
