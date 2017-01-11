@@ -18,7 +18,25 @@ cabal-version:       >=1.10
 executable cgraytrace
   main-is:             Main.hs
   -- other-modules:
-  default-extensions:  BangPatterns, NoMonomorphismRestriction, QuasiQuotes, TemplateHaskell, TypeFamilies, FlexibleInstances, GeneralizedNewtypeDeriving, DeriveGeneric, RankNTypes, MultiParamTypeClasses, FlexibleContexts
+  default-extensions:  BangPatterns
+                     , DeriveGeneric
+                     , FlexibleContexts
+                     , FlexibleInstances
+                     , GeneralizedNewtypeDeriving
+                     , MultiParamTypeClasses
+                     , NoMonomorphismRestriction
+                     , QuasiQuotes
+                     , RankNTypes
+                     , TemplateHaskell
+                     , TypeFamilies
+  other-modules:      BRDF
+                    , Camera
+                    , Geometry
+                    , Light
+                    , Material
+                    , Math
+                    , Raytracer 
+                    , Scene
   build-depends:       base,
                        deepseq,
                        yesod,
@@ -34,13 +52,21 @@ executable cgraytrace
   default-language:    Haskell2010
   ghc-options:         -Wall -threaded -O2 -optc-O3 -funfolding-use-threshold=16 -with-rtsopts=-N
 --  ghc-prof-options:    -Wall -threaded -prof -fprof-auto -rtsopts -O2 -optc-O3 -funfolding-use-threshold=16 "-with-rtsopts=-N -p -s -h -i0.1"
-  ghc-prof-options:    -prof -fprof-auto -rtsopts -with-rtsopts=-N
+--  ghc-prof-options:    -prof -fprof-auto -rtsopts -with-rtsopts=-N
 
 
 executable cgraytrace_prof_thread
   main-is:             Main.hs
   -- other-modules:
   default-extensions:  BangPatterns, NoMonomorphismRestriction, QuasiQuotes, TemplateHaskell, TypeFamilies, FlexibleInstances, GeneralizedNewtypeDeriving, DeriveGeneric, RankNTypes, MultiParamTypeClasses, FlexibleContexts
+  other-modules:      BRDF
+                    , Camera
+                    , Geometry
+                    , Light
+                    , Material
+                    , Math
+                    , Raytracer
+                    , Scene  
   build-depends:       base,
                        deepseq,
                        yesod,

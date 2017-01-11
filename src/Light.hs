@@ -1,4 +1,3 @@
-{-# LANGUAGE FlexibleContexts, AllowAmbiguousTypes #-}
 module Light where
 
 import qualified Prelude as P
@@ -16,7 +15,7 @@ type LightTrans     = Color (Dimensionless Float)              -- R, G, B coeffi
 -- |Light & shadow interface
 class RandomGen gen => Shadow gen light where
     shadowRay :: gen -> light -> Coord3 -> (RaySegment, gen)
-    eval      :: light -> UnitV3 -> LightIntensity                  -- dir2light
+    eval      :: gen -> light -> UnitV3 -> LightIntensity                  -- dir2light
 
 -- |Supported light types
 data Light = OmniLight (Coord3,             LuminousFlux Float) |   -- center, luminous flux [lumens]
@@ -43,8 +42,8 @@ instance RandomGen gen => Shadow gen Light where
             (ran_y, gen'')  = next gen'
             (sampleX, sampleY) = (inRange gen ran_x P.- 0.5, inRange gen' ran_y P.- 0.5) :: (Float, Float)
 
-    eval (OmniLight (_, e)) _               = V3 (e*pi4) (e*pi4) (e*pi4) where pi4 = _1 / (_4*pi)
-    eval (RectLight (_, side0, side1, e)) _ = V3 (e*k) (e*k) (e*k) where
+    eval _ (OmniLight (_, e)) _               = V3 (e*pi4) (e*pi4) (e*pi4) where pi4 = _1 / (_4*pi)
+    eval _ (RectLight (_, side0, side1, e)) _ = V3 (e*k) (e*k) (e*k) where
         k       = _1 / (_4*pi*surface)                   -- double sided
         surface = (norm side0 P.* norm side1) *~ one     -- TODO [m^2]
 
