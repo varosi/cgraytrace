@@ -2,8 +2,4 @@ flags: {}
 packages:
 - '.'
 extra-deps:
-- email-validate-2.3.1
-- yesod-1.4.5
-- yesod-form-1.4.13
-- yesod-persistent-1.4.2
-resolver: nightly-2017-07-31
+resolver: lts-10.2
