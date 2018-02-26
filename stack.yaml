@@ -15,11 +15,6 @@ packages:
   extra-dep: true
   
 - location:
-    git: https://github.com/varosi/bifunctors.git
-    commit: c68f0b9a5c7a3ffc5ad9cc0d9a550c54d26f42f5
-  extra-dep: true
-  
-- location:
     git: https://github.com/varosi/cabal-doctest.git
     commit: 67577b447faca517cc9753a50ead2ff569e0b282
   extra-dep: true
@@ -30,16 +25,18 @@ packages:
   extra-dep: true
 
 - location:
-    git: https://github.com/varosi/uri-bytestring.git
-    commit: 1904433733637bcacfff04fbc029c8bf37f7b74b
-  extra-dep: true
-
-- location:
     git: https://github.com/varosi/http-api-data.git
     commit: 93ae8c826ee757b40f14a68fd1fef55426dd2eb2
   extra-dep: true
   
+- location:
+    git: https://github.com/varosi/hs-securemem.git
+    commit: b009f75d20875db7d61f24bae68439d9fc97443e
+  extra-dep: true
+  
 extra-deps:
+- bifunctors-5.5.2
+- uri-bytestring-0.3.1.1
 - primitive-0.6.3.0
 - vector-0.12.0.1
 - zlib-0.6.1.2
@@ -142,7 +139,6 @@ extra-deps:
 - attoparsec-iso8601-1.0.0.0
 - crypto-cipher-types-0.0.9
 - haskell-src-exts-1.20.1
-- securemem-0.1.9
 - syb-0.7
 - th-orphans-0.13.5
 - cpphs-1.20.8
