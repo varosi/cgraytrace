@@ -1,17 +1,53 @@
-flags: {}
+flags: 
+    time-locale-compat:
+        old-locale: false
+
 packages:
 - '.'
+- location:
+    git: https://github.com/varosi/hashable.git
+    commit: 380669aad16a7f28cfc2308b734772ea40d4e1a2
+  extra-dep: true
+  
+- location:
+    git: https://github.com/varosi/integer-logarithms.git
+    commit: c105d907c3b6ed60dea5811f7b07649f7efdeab5
+  extra-dep: true
+  
+- location:
+    git: https://github.com/varosi/bifunctors.git
+    commit: c68f0b9a5c7a3ffc5ad9cc0d9a550c54d26f42f5
+  extra-dep: true
+  
+- location:
+    git: https://github.com/varosi/cabal-doctest.git
+    commit: 67577b447faca517cc9753a50ead2ff569e0b282
+  extra-dep: true
+  
+- location:
+    git: https://github.com/varosi/email-validate-hs.git
+    commit: 190de6d021e7a92135b18af2390a187e89fc3d9d
+  extra-dep: true
+
+- location:
+    git: https://github.com/varosi/uri-bytestring.git
+    commit: 1904433733637bcacfff04fbc029c8bf37f7b74b
+  extra-dep: true
+
+- location:
+    git: https://github.com/varosi/http-api-data.git
+    commit: 93ae8c826ee757b40f14a68fd1fef55426dd2eb2
+  extra-dep: true
+  
 extra-deps:
 - primitive-0.6.3.0
 - vector-0.12.0.1
 - zlib-0.6.1.2
 - random-1.1
 - scientific-0.3.5.2
-- hashable-1.2.6.1
 - attoparsec-0.13.2.2
 - base-compat-0.9.3
 - dlist-0.8.0.4
-- integer-logarithms-1.0.2
 - tagged-0.8.5
 - th-abstraction-0.2.6.0
 - time-locale-compat-0.1.1.3
@@ -54,7 +90,6 @@ extra-deps:
 - data-default-0.7.1.1
 - deepseq-generics-0.2.0.0
 - easy-file-0.2.1
-- email-validate-2.3.2.2
 - exceptions-0.9.0
 - http-date-0.0.6.1
 - http-types-0.12.1
@@ -95,7 +130,6 @@ extra-deps:
 - data-default-instances-old-locale-0.0.1
 - entropy-0.4
 - haskell-src-meta-0.8.0.2
-- http-api-data-0.3.7.2
 - psqueues-0.2.5.0
 - setenv-0.1.1.3
 - silently-1.2.5
@@ -106,13 +140,11 @@ extra-deps:
 - utf8-string-1.0.1.1
 - vector-algorithms-0.7.0.1
 - attoparsec-iso8601-1.0.0.0
-- cabal-doctest-1.0.6
 - crypto-cipher-types-0.0.9
 - haskell-src-exts-1.20.1
 - securemem-0.1.9
 - syb-0.7
 - th-orphans-0.13.5
-- uri-bytestring-0.3.1.0
 - cpphs-1.20.8
 - fail-4.9.0.0
 - memory-0.14.14
@@ -124,6 +156,29 @@ extra-deps:
 - old-time-1.1.0.3
 - polyparse-1.12
 - th-expand-syns-0.4.4.0
+- JuicyPixels-3.2.9.4
+- dimensional-1.0.1.3
+- linear-1.20.7
+- mersenne-random-pure64-0.2.2.0
+- parallel-3.2.1.1
+- tf-random-0.5
+- yesod-1.6.0
+- adjunctions-4.4
+- base-orphans-0.6
+- bytes-0.15.3
+- distributive-0.5.3
+- exact-pi-0.4.1.3
+- lens-4.16
+- numtype-dk-0.5.0.1
+- reflection-2.1.3
+- semigroupoids-5.2.2
+- call-stack-0.1.0
+- comonad-5.0.3
+- contravariant-1.4.1
+- free-5
+- kan-extensions-5.1
+- profunctors-5.2.2
+- StateVar-1.1.0.4
 
 resolver: ghc-8.4.0.20180224
 allow-newer: true
