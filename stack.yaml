@@ -29,12 +29,8 @@ packages:
     commit: 93ae8c826ee757b40f14a68fd1fef55426dd2eb2
   extra-dep: true
   
-- location:
-    git: https://github.com/varosi/hs-securemem.git
-    commit: b009f75d20875db7d61f24bae68439d9fc97443e
-  extra-dep: true
-  
 extra-deps:
+- securemem-0.1.10
 - bifunctors-5.5.2
 - uri-bytestring-0.3.1.1
 - primitive-0.6.3.0
