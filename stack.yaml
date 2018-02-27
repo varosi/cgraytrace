@@ -33,6 +33,11 @@ packages:
     git: https://github.com/varosi/dimensional.git
     commit: 60b84f3cf9dac6b58b838b605385df86a68b326e
   extra-dep: true 
+
+- location:
+    git: https://github.com/haskell-suite/haskell-src-exts.git
+    commit: 935f6f0915e89c314b686bdbdc6980c72335ba3c
+  extra-dep: true   
   
 extra-deps:
 - ieee754-0.8.0
@@ -140,7 +145,6 @@ extra-deps:
 - vector-algorithms-0.7.0.1
 - attoparsec-iso8601-1.0.0.0
 - crypto-cipher-types-0.0.9
-- haskell-src-exts-1.20.1
 - syb-0.7
 - th-orphans-0.13.5
 - cpphs-1.20.8
