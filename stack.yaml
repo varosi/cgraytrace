@@ -35,6 +35,12 @@ packages:
   extra-dep: true 
 
 - location:
+    git: https://github.com/varosi/blaze-builder.git
+    commit: ed265e18097cb9d399eb9288994e348c2f4c088d
+  extra-dep: true 
+
+  
+- location:
     git: https://github.com/haskell-suite/haskell-src-exts.git
     commit: 935f6f0915e89c314b686bdbdc6980c72335ba3c
   extra-dep: true   
@@ -82,7 +88,6 @@ extra-deps:
 - async-2.2.1
 - auto-update-0.1.4
 - base64-bytestring-1.0.0.1
-- blaze-builder-0.4.0.2
 - byteable-0.1.1
 - byteorder-1.0.4
 - bytestring-builder-0.10.8.1.0
