@@ -27,11 +27,6 @@ packages:
 - location:
     git: https://github.com/varosi/http-api-data.git
     commit: 93ae8c826ee757b40f14a68fd1fef55426dd2eb2
-  extra-dep: true
- 
-- location:
-    git: https://github.com/varosi/dimensional.git
-    commit: 60b84f3cf9dac6b58b838b605385df86a68b326e
   extra-dep: true 
 
 - location:
@@ -46,6 +41,7 @@ packages:
   extra-dep: true   
   
 extra-deps:
+- dimensional-1.1
 - ieee754-0.8.0
 - securemem-0.1.10
 - bifunctors-5.5.2
