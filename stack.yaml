@@ -10,11 +10,6 @@ packages:
   extra-dep: true
   
 - location:
-    git: https://github.com/varosi/integer-logarithms.git
-    commit: c105d907c3b6ed60dea5811f7b07649f7efdeab5
-  extra-dep: true
-  
-- location:
     git: https://github.com/varosi/cabal-doctest.git
     commit: 67577b447faca517cc9753a50ead2ff569e0b282
   extra-dep: true
@@ -41,6 +36,7 @@ packages:
   extra-dep: true   
   
 extra-deps:
+- integer-logarithms-1.0.2.1
 - dimensional-1.1
 - ieee754-0.8.0
 - securemem-0.1.10
