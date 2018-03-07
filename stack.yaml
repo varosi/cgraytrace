@@ -13,11 +13,6 @@ packages:
     git: https://github.com/varosi/cabal-doctest.git
     commit: 67577b447faca517cc9753a50ead2ff569e0b282
   extra-dep: true
-  
-- location:
-    git: https://github.com/varosi/email-validate-hs.git
-    commit: 190de6d021e7a92135b18af2390a187e89fc3d9d
-  extra-dep: true
 
 - location:
     git: https://github.com/varosi/http-api-data.git
@@ -28,7 +23,6 @@ packages:
     git: https://github.com/varosi/blaze-builder.git
     commit: ed265e18097cb9d399eb9288994e348c2f4c088d
   extra-dep: true 
-
   
 - location:
     git: https://github.com/haskell-suite/haskell-src-exts.git
@@ -36,6 +30,7 @@ packages:
   extra-dep: true   
   
 extra-deps:
+- email-validate-2.3.2.3
 - integer-logarithms-1.0.2.1
 - dimensional-1.1
 - ieee754-0.8.0
