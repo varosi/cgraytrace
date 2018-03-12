@@ -31,8 +31,13 @@ packages:
   
 - location:
     git: https://github.com/haskell-hvr/deepseq-generics.git
-    commit: b4044c8b29cb705a3cec1670b64e919859ce2971
+    commit: 58ff1677ea87a7448705666cd7653e0896e4aa51
   extra-dep: true   
+
+- location:
+    git: https://github.com/varosi/haskell-src-meta.git
+    commit: 5b6deee14f7834495a0a7c66537e6dc9b959dd76
+  extra-dep: true    
   
 extra-deps:
 - abstract-deque-0.3
@@ -149,7 +154,6 @@ extra-deps:
 - data-default-instances-dlist-0.0.1
 - data-default-instances-old-locale-0.0.1
 - entropy-0.4.1.1
-- haskell-src-meta-0.8.0.2
 - psqueues-0.2.5.0
 - setenv-0.1.1.3
 - silently-1.2.5
