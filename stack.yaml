@@ -10,8 +10,8 @@ packages:
   extra-dep: true
   
 - location:
-    git: https://github.com/varosi/cabal-doctest.git
-    commit: 67577b447faca517cc9753a50ead2ff569e0b282
+    git: https://github.com/phadej/cabal-doctest.git
+    commit: 2892c83df9f83c19481908568ad8508ab0b3c8a5
   extra-dep: true
 
 - location:
@@ -192,6 +192,7 @@ extra-deps:
 - kan-extensions-5.1
 - profunctors-5.2.2
 - StateVar-1.1.0.4
+- happy-1.19.9
 
 resolver: ghc-8.4.1
 allow-newer: true
