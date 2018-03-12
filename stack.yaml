@@ -193,12 +193,5 @@ extra-deps:
 - profunctors-5.2.2
 - StateVar-1.1.0.4
 
-resolver: ghc-8.4.0.20180224
+resolver: ghc-8.4.1
 allow-newer: true
-
-ghc-build: standard
-setup-info:
-  ghc:
-    windows64:
-      8.4.0.20180224:
-        url: https://downloads.haskell.org/~ghc/8.4.1/ghc-8.4.1-x86_64-unknown-mingw32.tar.xz
