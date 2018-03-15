@@ -4,10 +4,6 @@ flags:
 
 packages:
 - '.'
-- location:
-    git: https://github.com/varosi/hashable.git
-    commit: 380669aad16a7f28cfc2308b734772ea40d4e1a2
-  extra-dep: true
   
 - location:
     git: https://github.com/phadej/cabal-doctest.git
@@ -30,6 +26,7 @@ packages:
   extra-dep: true    
   
 extra-deps:
+- hashable-1.2.7.0
 - blaze-builder-0.4.1.0
 - http-api-data-0.3.8.1
 - abstract-deque-0.3
