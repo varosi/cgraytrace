@@ -15,11 +15,6 @@ packages:
   extra-dep: true
 
 - location:
-    git: https://github.com/varosi/http-api-data.git
-    commit: 93ae8c826ee757b40f14a68fd1fef55426dd2eb2
-  extra-dep: true 
-
-- location:
     git: https://github.com/varosi/blaze-builder.git
     commit: ed265e18097cb9d399eb9288994e348c2f4c088d
   extra-dep: true 
@@ -40,6 +35,7 @@ packages:
   extra-dep: true    
   
 extra-deps:
+- http-api-data-0.3.8.1
 - abstract-deque-0.3
 - abstract-par-0.3.3
 - monad-par-extras-0.3.3
