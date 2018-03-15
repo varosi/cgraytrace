@@ -11,6 +11,8 @@ packages:
   extra-dep: true    
   
 extra-deps:
+- deepseq-1.4.3.0
+- bytestring-0.10.8.2
 - haskell-src-exts-1.20.2
 - deepseq-generics-0.2.0.0
 - cabal-doctest-1.0.6
@@ -180,3 +182,4 @@ extra-deps:
 - happy-1.19.9
 
 resolver: ghc-8.4.1
+allow-newer: true
