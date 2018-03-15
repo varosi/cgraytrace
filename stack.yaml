@@ -13,11 +13,6 @@ packages:
     git: https://github.com/phadej/cabal-doctest.git
     commit: 2892c83df9f83c19481908568ad8508ab0b3c8a5
   extra-dep: true
-
-- location:
-    git: https://github.com/varosi/blaze-builder.git
-    commit: ed265e18097cb9d399eb9288994e348c2f4c088d
-  extra-dep: true 
   
 - location:
     git: https://github.com/haskell-suite/haskell-src-exts.git
@@ -35,6 +30,7 @@ packages:
   extra-dep: true    
   
 extra-deps:
+- blaze-builder-0.4.1.0
 - http-api-data-0.3.8.1
 - abstract-deque-0.3
 - abstract-par-0.3.3
