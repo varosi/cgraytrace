@@ -6,19 +6,9 @@ packages:
 - '.'
   
 - location:
-    git: https://github.com/phadej/cabal-doctest.git
-    commit: 2892c83df9f83c19481908568ad8508ab0b3c8a5
-  extra-dep: true
-  
-- location:
     git: https://github.com/haskell-suite/haskell-src-exts.git
     commit: 935f6f0915e89c314b686bdbdc6980c72335ba3c
-  extra-dep: true
-  
-- location:
-    git: https://github.com/haskell-hvr/deepseq-generics.git
-    commit: 58ff1677ea87a7448705666cd7653e0896e4aa51
-  extra-dep: true   
+  extra-dep: true 
 
 - location:
     git: https://github.com/varosi/haskell-src-meta.git
@@ -26,6 +16,8 @@ packages:
   extra-dep: true    
   
 extra-deps:
+- deepseq-generics-0.2.0.0
+- cabal-doctest-1.0.6
 - hashable-1.2.7.0
 - blaze-builder-0.4.1.0
 - http-api-data-0.3.8.1
