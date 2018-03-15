@@ -2,7 +2,7 @@
 -- documentation, see http://haskell.org/cabal/users-guide/
 
 name:                cgraytrace
-version:             0.1.0.0
+version:             0.1.0.1
 synopsis:            Simple raytracer made as an demonstration for CG^2 seminar (Sofia, Bulgaria)
 -- description:
 license:             PublicDomain

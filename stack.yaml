@@ -4,11 +4,6 @@ flags:
 
 packages:
 - '.'
-  
-- location:
-    git: https://github.com/haskell-suite/haskell-src-exts.git
-    commit: 935f6f0915e89c314b686bdbdc6980c72335ba3c
-  extra-dep: true 
 
 - location:
     git: https://github.com/varosi/haskell-src-meta.git
@@ -16,6 +11,7 @@ packages:
   extra-dep: true    
   
 extra-deps:
+- haskell-src-exts-1.20.2
 - deepseq-generics-0.2.0.0
 - cabal-doctest-1.0.6
 - hashable-1.2.7.0
@@ -184,4 +180,3 @@ extra-deps:
 - happy-1.19.9
 
 resolver: ghc-8.4.1
-allow-newer: true
