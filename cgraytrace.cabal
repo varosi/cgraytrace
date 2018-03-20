@@ -44,24 +44,6 @@ library
   default-language:    Haskell2010
   ghc-options:         -Wall -O2 -optc-O3 -funfolding-use-threshold=16
 
-executable cgraytrace-srv
-  main-is:             Main.hs
-
---  default-extensions:  
-
-  build-depends:       base
-                     , cgraytrace
-                     , yesod
-                     , JuicyPixels
-                     , tf-random
-                     , mersenne-random-pure64
-
-  hs-source-dirs:      src
-  default-language:    Haskell2010
-  ghc-options:         -Wall -threaded -O2 -optc-O3 -funfolding-use-threshold=16 -with-rtsopts=-N
---  ghc-prof-options:    -Wall -threaded -prof -fprof-auto -rtsopts -O2 -optc-O3 -funfolding-use-threshold=16 "-with-rtsopts=-N -p -s -h -i0.1"
---  ghc-prof-options:    -prof -fprof-auto -rtsopts -with-rtsopts=-N
-
 executable cgraytrace-exe
   main-is:             Main.hs
 
@@ -71,43 +53,9 @@ executable cgraytrace-exe
                      , cgraytrace
                      , JuicyPixels
                      , tf-random
-                     , mersenne-random-pure64
-                     , time
 
   hs-source-dirs:      App
   default-language:    Haskell2010
   
   -- Assuming we have 15Mb L3 cache and gen0+ collections are interleaved with non-GC
-  ghc-options:         -Wall -threaded -O3 -optc-O3 -funfolding-use-threshold=16 -rtsopts "-with-rtsopts=-N -qb0"
-
-executable cgraytrace_prof_thread
-  main-is:             Main.hs
-
---  default-extensions:  
-
-  build-depends:       base
-                     , cgraytrace
-                     , JuicyPixels
-                     , tf-random
-                     , mersenne-random-pure64
-                     , time
-
-  hs-source-dirs:      App
-  default-language:    Haskell2010
-  ghc-options:         -Wall -threaded -eventlog -rtsopts -O3 -optc-O3 -funfolding-use-threshold=16 "-with-rtsopts=-N -A15m -qb0 -ls -lf"
-
-  
-benchmark cgraytrace-bench
-  type:                exitcode-stdio-1.0
-  main-is:             MainBench.hs
-
-  build-depends:       base
-                     , cgraytrace
-                     , tf-random
-                     , mersenne-random-pure64
-                     , criterion
-
-  hs-source-dirs:      App
-  default-language:    Haskell2010
-  
   ghc-options:         -Wall -threaded -O3 -optc-O3 -funfolding-use-threshold=16 -rtsopts "-with-rtsopts=-N -qb0"
