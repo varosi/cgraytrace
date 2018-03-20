@@ -94,9 +94,9 @@ raytrace :: (RandomGen gen, Camera cam) => gen -> Scene -> cam -> Image PixelRGB
 raytrace gen scene camera = Image width height raw where
     raw    = fromList( concatMap fromPixel pxList )
 
-    -- |Introduce parallelism at this line. Trace 20 rays per lightweight thread.
---    pxList = pixels gen `using` parListChunk 2048 rseq
-    pxList = pixels gen `using` parBuffer 20 rseq
+    -- |Introduce parallelism at this line. Trace batches of 4096 rays distributed each on all cores.
+    pxList = pixels gen `using` parListChunk 4096 rseq          -- fastest on GHC 8.4.1, but on each 4096 we have barrier
+--    pxList = pixels gen `using` parBuffer 24 rseq
 
     -- |Map light intensity to pixel color
     mapLightIntensity :: LightIntensity -> PixelRGB8
