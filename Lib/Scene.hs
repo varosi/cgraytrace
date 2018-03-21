@@ -1,18 +1,18 @@
-module Scene where
+module Scene( cornellScene, Scene(..), Entity(..), RenderSettings(..), cornellCamera) where
 
-import Numeric.Units.Dimensional.Prelude( (*~), lumen )
-import Linear
-import Linear.Affine
-import Geometry
-import Camera
-import Light
-import Material
-import BRDF
-import Math
+import           BRDF
+import           Camera
+import           Geometry
+import           Light
+import           Linear
+import           Linear.Affine
+import           Material
+import           Math
+import           Numeric.Units.Dimensional.Prelude (lumen, (*~))
 
 -- Scene description
-data Entity = Entity {  enGeom      :: Geometry,
-                        enMaterial  :: Material }
+data Entity = Entity {  enGeom     :: Geometry,
+                        enMaterial :: Material }
                         deriving (Eq, Show)
 
 data RenderSettings = Settings {
@@ -20,10 +20,10 @@ data RenderSettings = Settings {
                         rsSecondaryGICount  :: Int,
                         rsPathMaxDepth      :: Int }
 
-data Scene = Scene {    scEntities  :: [Entity],
-                        scLight     :: Light,
-                        scEnvLight          :: LightIntensity,
-                        scSettings  :: RenderSettings }
+data Scene = Scene {    scEntities :: [Entity],
+                        scLight    :: Light,
+                        scEnvLight :: LightIntensity,
+                        scSettings :: RenderSettings }
 
 -----------------------------------------------------------------------------------------------------------------------
 -- Demo scenes
@@ -50,6 +50,7 @@ cornellCamera width height = PinholeCamera sensor camPos' camDir' camUp' camFoca
         camFocal = 1.0        -- 10mm
         camSize  = V2 3.6 2.4 -- 35mm
 
+{-
 demoScene :: Scene
 demoScene = Scene [sphere0, sphere1, sphere2, plane0] light0 zeroLightIntensity settings where
         sphere0 = Entity (Sphere (P$V3 0 0 200) 20)                  (mkDiffuse 0.98 0 0)
@@ -79,6 +80,7 @@ demoCamera1 = PinholeCamera sensor camPos camDir camUp camFocal  where
         sensor   = Sensor (360, 240, camSize, 0.01)
         camFocal = 4.0        -- 40mm
         camSize  = V2 3.6 2.4 -- 35mm
+-}
 
 -----------------------------------------------------------------------------------------------------------------------
 liftIntersection :: Entity -> Intersection Geometry -> Intersection Entity

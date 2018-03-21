@@ -15,11 +15,6 @@ import BRDF
 import System.Random (RandomGen(..))
 import Control.Parallel.Strategies
 
--- | gamma used for intensity mapping
-gamma, invGamma :: Float
-gamma       = 2.2
-invGamma    = 1 / gamma
-
 -- |Trace single ray segment against a scene and return closest intersection if there is
 traceRay :: Scene -> Maybe Entity -> RaySegment -> Maybe (Intersection Entity)
 traceRay scene toSkip raySeg = foldl closest Nothing . map (intersect raySeg) . skip toSkip . scEntities $ scene where
@@ -102,6 +97,11 @@ raytrace gen scene camera = Image width height raw where
     mapLightIntensity :: LightIntensity -> PixelRGB8
     mapLightIntensity (V3 r g b) = PixelRGB8 (f2w r) (f2w g) (f2w b) where
             f2w f = truncate (min 1 (((f /~ lumen) * exposure) ** invGamma) * 255)
+
+            -- | gamma used for intensity mapping
+            gamma, invGamma :: Float
+            gamma       = 2.2
+            invGamma    = 1 / gamma            
 
     -- |Raytraced pixels
     pixels gen' = map pixel $ zip (generators gen') (screenCoords sensor) where
