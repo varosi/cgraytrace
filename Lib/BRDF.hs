@@ -1,12 +1,12 @@
 module BRDF where
 
-import Prelude ()
-import Numeric.Units.Dimensional.Prelude
-import Geometry
-import Light
-import Math
-import Linear
-import System.Random (RandomGen(..))
+import           Geometry
+import           Light
+import           Linear
+import           Math
+import           Numeric.Units.Dimensional.Prelude
+import           Prelude                           ()
+import           System.Random                     (RandomGen (..))
 
 -- |all BRDFs have this two functions
 class BRDF brdf geom where
@@ -14,7 +14,7 @@ class BRDF brdf geom where
     generateRay  :: RandomGen gen => gen -> brdf -> Intersection geom -> (Ray, gen) -- generate new ray reflected from the surface
 
 
-data BRDFs = Diffuse LightTrans
+newtype BRDFs = Diffuse LightTrans
                 deriving (Eq, Show)
 
 -- |Implement Diffuse BRDF
