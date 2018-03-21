@@ -78,7 +78,7 @@ executable cgraytrace-exe
   default-language:    Haskell2010
   
   -- gen0+ collections are interleaved with non-GC. 8 threads maximum for parallel GC (larger give worse results on many machines).
-  ghc-options:         -Wall -threaded -O3 -optc-O3 -funfolding-use-threshold=16 -rtsopts "-with-rtsopts=-N -A15m -qb0 -qn8"
+  ghc-options:         -Wall -threaded -O3 -optc-O3 -funfolding-use-threshold=16 -rtsopts "-with-rtsopts=-N -A40m -qb0 -qn24"
 
 executable cgraytrace_prof_thread
   main-is:             Main.hs
@@ -94,7 +94,7 @@ executable cgraytrace_prof_thread
 
   hs-source-dirs:      App
   default-language:    Haskell2010
-  ghc-options:         -Wall -threaded -O3 -optc-O3 -funfolding-use-threshold=16 -rtsopts -eventlog "-with-rtsopts=-N -A15m -qb0 -qn8 -ls -lf"
+  ghc-options:         -Wall -threaded -O3 -optc-O3 -funfolding-use-threshold=16 -rtsopts -eventlog "-with-rtsopts=-N -A40m -qb0 -qn24 -ls -lf"
 
   
 benchmark cgraytrace-bench
@@ -110,4 +110,4 @@ benchmark cgraytrace-bench
   hs-source-dirs:      App
   default-language:    Haskell2010
   
-  ghc-options:         -Wall -threaded -O3 -optc-O3 -funfolding-use-threshold=16 -rtsopts "-with-rtsopts=-N -A15m -qb0 -qn8"
+  ghc-options:         -Wall -threaded -O3 -optc-O3 -funfolding-use-threshold=16 -rtsopts "-with-rtsopts=-N -A40m -qb0 -qn24"
