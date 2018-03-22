@@ -9,6 +9,7 @@ import           Linear.Affine
 import           Material
 import           Math
 import           Numeric.Units.Dimensional.Prelude (lumen, (*~))
+import           Data.Compact
 
 -- Scene description
 data Entity = Entity {  enGeom     :: Geometry,
@@ -27,8 +28,8 @@ data Scene = Scene {    scEntities :: [Entity],
 
 -----------------------------------------------------------------------------------------------------------------------
 -- Demo scenes
-cornellScene :: Scene
-cornellScene = Scene [leftWall, rightWall, bottomWall, backWall, topWall, sphere0] light1 zeroLightIntensity settings where
+cornellScene :: IO (Compact Scene)
+cornellScene = compact $ Scene [leftWall, rightWall, bottomWall, backWall, topWall, sphere0] light1 zeroLightIntensity settings where
         sphere0    = Entity (Sphere (P$V3 0 (-50) 0) 20)          (mkDiffuse 0.50 0.50 0.50)
         leftWall   = Entity (Plane (normalize3(V3 1 0 0))    100) (mkDiffuse 1.58 0 0)
         rightWall  = Entity (Plane (normalize3(V3 (-1) 0 0)) 100) (mkDiffuse 0.0 0.0 0.28)

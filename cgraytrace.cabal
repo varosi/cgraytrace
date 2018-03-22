@@ -38,7 +38,8 @@ library
                        random,
                        parallel,
                        vector,
-                       dimensional
+                       dimensional,
+                       compact
                        
   hs-source-dirs:      Lib
   default-language:    Haskell2010
@@ -55,6 +56,7 @@ executable cgraytrace-srv
                      , JuicyPixels
                      , tf-random
                      , mersenne-random-pure64
+                     , compact
 
   hs-source-dirs:      src
   default-language:    Haskell2010
@@ -73,6 +75,7 @@ executable cgraytrace-exe
                      , tf-random
                      , mersenne-random-pure64
                      , time
+                     , compact
 
   hs-source-dirs:      App
   default-language:    Haskell2010
@@ -91,6 +94,7 @@ executable cgraytrace_prof_thread
                      , tf-random
                      , mersenne-random-pure64
                      , time
+                     , compact
 
   hs-source-dirs:      App
   default-language:    Haskell2010
@@ -106,6 +110,7 @@ benchmark cgraytrace-bench
                      , tf-random
                      , mersenne-random-pure64
                      , criterion
+                     , compact
 
   hs-source-dirs:      App
   default-language:    Haskell2010

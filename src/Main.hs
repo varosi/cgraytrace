@@ -6,6 +6,7 @@ import Codec.Picture.Png
 import Raytracer
 import Scene
 import System.Random.TF.Gen (seedTFGen)
+import Data.Compact
 
 -- Little RESTful HTTP web server to show us rendering result
 data App = App
@@ -18,8 +19,10 @@ mkYesod "App" [parseRoutes|
 
 getImageSizeR :: MonadHandler m => Int -> Int -> m TypedContent
 getImageSizeR width height = do
+    sceneCompacted <- liftIO $ cornellScene
+
     let gen = seedTFGen (1,2,3,4)
-    let image = raytrace gen cornellScene (cornellCamera width height)
+    let image = raytrace gen (getCompact sceneCompacted) (cornellCamera width height)
 
     sendResponse $ toTypedContent (typePng, toContent (encodePng image))
 
