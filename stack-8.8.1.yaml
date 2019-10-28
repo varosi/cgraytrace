@@ -1,0 +1,23 @@
+flags: 
+    time-locale-compat:
+        old-locale: false
+
+packages:
+- '.'
+
+extra-deps:
+- yesod-1.6.0@sha256:bcd350b49c2edc839f0466fa37ba298c7cd41afa5a3bfbddb6269144737d5637,2190
+- yesod-core-1.6.16.1@sha256:e55c93eef6241ae5bbf0505947dfc822be065e153483f11577617c9bd58e822a,7882
+- yesod-form-1.6.7@sha256:b216bb4eb0575d4fcc497b1d7f47edf25fc9035ab3ae8b77bf7fcbedc15dd2ea,3350
+- yesod-persistent-1.6.0.2@sha256:1b8c7c4d76e7f24f37fbb2eda44b9c20b1e345ca42f625e79ec66ae8949baefb,1692
+- git: https://github.com/yesodweb/persistent.git
+  commit: 5286a98fa2da78530a92ce0958f9fb58f3b60793
+  subdirs:
+    - persistent
+- git: https://github.com/yesodweb/persistent.git
+  commit: d1765d3cb78509d31dcac03a21e00b841f6d214c
+  subdirs:
+    - persistent-template
+
+resolver: nightly-2019-10-25
+allow-newer: true
