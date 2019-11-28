@@ -6,12 +6,6 @@ packages:
 - '.'
 
 extra-deps:
-- yesod-1.6.0@sha256:bcd350b49c2edc839f0466fa37ba298c7cd41afa5a3bfbddb6269144737d5637,2190
-- yesod-core-1.6.16.1@sha256:e55c93eef6241ae5bbf0505947dfc822be065e153483f11577617c9bd58e822a,7882
-- yesod-form-1.6.7@sha256:b216bb4eb0575d4fcc497b1d7f47edf25fc9035ab3ae8b77bf7fcbedc15dd2ea,3350
-- yesod-persistent-1.6.0.2@sha256:1b8c7c4d76e7f24f37fbb2eda44b9c20b1e345ca42f625e79ec66ae8949baefb,1692
-- persistent-2.10.3@sha256:e9d420c27bc04e52520fbd6d0528c2a1a4c27d1460ecc36c993da89b8d17b217,4708
-- persistent-template-2.7.3@sha256:ac3e5e8c48e968b927bbf4e97162c52e7e417d69b05efeb1c581d7c682e043d2,2703
 
-resolver: nightly-2019-10-28
+resolver: nightly-2019-11-28
 allow-newer: true
