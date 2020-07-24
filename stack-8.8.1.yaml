@@ -7,5 +7,5 @@ packages:
 
 extra-deps:
 
-resolver: nightly-2019-11-28
+resolver: lts-16.6
 allow-newer: true
