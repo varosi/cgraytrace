@@ -1,0 +1,11 @@
+flags: 
+    time-locale-compat:
+        old-locale: false
+
+packages:
+- '.'
+
+extra-deps:
+
+resolver: nightly-2020-07-24
+allow-newer: true
