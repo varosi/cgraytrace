@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleContexts, GADTs #-}
 module Math(    Ray(..), RaySegment (..),
                 Vec3, Coord3, coord,
                 UnitV3, normalize3, normalized, mkTangent,
@@ -61,6 +62,10 @@ mkTangent (UnitV3 (V3 x y z)) = normalize3( result c ) where
 --  phi The azimuth angle in the range [0, 2*pi]
 data SphericalVec = SphereV !Float !(PlaneAngle Float) !(PlaneAngle Float) -- length, theta, phi
 
+{-@ reflect vector_qlen @-}
+vector_qlen (V3 x y z) = x*x + y*y + z*z
+
+{-@ toSpherical :: {v:V3 Float | vector_qlen v > 0.0 } -> SphericalVec @-}
 toSpherical :: V3 Float -> SphericalVec
 toSpherical v@(V3 x y z) = SphereV r theta phi where
         r     = norm v

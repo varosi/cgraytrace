@@ -1,5 +1,19 @@
 flags: {}
 packages:
 - '.'
+
 extra-deps:
+  - hashable-1.3.5.0
+  - rest-rewrite-0.3.0
+  - git: https://github.com/ucsd-progsys/liquidhaskell
+    commit: c06a3bb68c1bc83d2227158de0276713b83f13bb
+    subdirs:
+      - .
+      - liquid-base
+      - liquid-prelude
+      - liquid-ghc-prim
+      - liquid-containers
+  - git: https://github.com/ucsd-progsys/liquid-fixpoint
+    commit: 98d21934ceda146b4280c73552cc387d0c497f56
+
 resolver: lts-18.28
