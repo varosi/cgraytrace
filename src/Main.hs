@@ -9,12 +9,13 @@ import System.Random.TF.Gen (seedTFGen)
 
 -- Little RESTful HTTP web server to show us rendering result
 data App = App
-instance Yesod App
 
-mkYesod "App" [parseRoutes| 
+mkYesod "App" [parseRoutes|
 /               ImageR      GET
 /res/#Int/#Int  ImageSizeR  GET
 |]
+
+instance Yesod App
 
 getImageSizeR :: MonadHandler m => Int -> Int -> m TypedContent
 getImageSizeR width height = do
